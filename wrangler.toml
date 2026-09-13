@@ -1,0 +1,25 @@
+name = "menace-admin"
+main = ".open-next/worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[vars]
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_ZmFpdGhmdWwtdGFkcG9sZS01MzYyLmNsZXJrLmFjY291bnRzLmRldiQ"
+NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = "/dashboard"
+ADMIN_EMAILS = "zamin@menace.store,admin@menace.store,zamin@menance.store,admin@menance.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com"
+
+# Shared Cloudflare D1 Database with Menace Storefront
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "menance-db"
+# database_id = "<your-shared-d1-database-id>"
+
+# Shared Cloudflare KV Cache
+# [[kv_namespaces]]
+# binding = "MENANCE_KV"
+# id = "<your-shared-kv-id>"

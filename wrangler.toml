@@ -14,12 +14,12 @@ NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = "/dashboard"
 ADMIN_EMAILS = "zamin@menace.store,admin@menace.store,zamin@menance.store,admin@menance.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com"
 
 # Shared Cloudflare D1 Database with Menace Storefront
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "menance-db"
-# database_id = "<your-shared-d1-database-id>"
+[[d1_databases]]
+binding = "DB"
+database_name = "menace-db"
+database_id = "5208d6ac-b7b7-41d2-bcd6-2a7a4962c8b0"
 
 # Shared Cloudflare KV Cache
-# [[kv_namespaces]]
-# binding = "MENANCE_KV"
-# id = "<your-shared-kv-id>"
+[[kv_namespaces]]
+binding = "MENANCE_KV"
+id = "ab2dd890e2774b26a4b088482abeceef"

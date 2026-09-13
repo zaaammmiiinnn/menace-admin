@@ -59,25 +59,43 @@ export function ProductsListClient({ initialProducts }: ProductsListClientProps)
     {
       accessorKey: 'name',
       header: 'PRODUCT SILHOUETTE',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#181818] border border-[#262626] flex items-center justify-center text-[#C6FF00] flex-shrink-0">
-            <Shirt className="w-4 h-4" />
-          </div>
-          <div>
-            <Link
-              href={`/products/${row.original.id}`}
-              className="font-bold text-xs text-[#F5F1E8] hover:text-[#C6FF00] transition-colors flex items-center gap-1"
-            >
-              <span>{row.original.name}</span>
-              <ExternalLink className="w-2.5 h-2.5 opacity-40 hover:opacity-100" />
-            </Link>
-            <div className="text-[10px] font-mono text-[#8A8A8A]">
-              /{row.original.slug} • {row.original.category}
+      cell: ({ row }) => {
+        const firstImg = row.original.images?.[0];
+        const imgUrl = typeof firstImg === 'string' ? firstImg : firstImg?.url;
+
+        return (
+          <div className="flex items-center gap-3">
+            {imgUrl ? (
+              <img
+                src={imgUrl}
+                alt={row.original.name}
+                className="w-10 h-10 rounded-lg object-cover border border-[#262626] flex-shrink-0"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-lg bg-[#181818] border border-[#262626] flex items-center justify-center text-[#C6FF00] flex-shrink-0">
+                <Shirt className="w-4 h-4" />
+              </div>
+            )}
+            <div>
+              <Link
+                href={`/products/${row.original.id}`}
+                className="font-bold text-xs text-[#F5F1E8] hover:text-[#C6FF00] transition-colors flex items-center gap-1"
+              >
+                <span>{row.original.name}</span>
+                <ExternalLink className="w-2.5 h-2.5 opacity-40 hover:opacity-100" />
+              </Link>
+              <div className="text-[10px] font-mono text-[#8A8A8A]">
+                /{row.original.slug} • {row.original.category}
+              </div>
+              {row.original.description && (
+                <p className="text-[10px] text-[#8A8A8A]/80 line-clamp-1 max-w-xs mt-0.5 font-sans">
+                  {row.original.description}
+                </p>
+              )}
             </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       accessorKey: 'dropName',

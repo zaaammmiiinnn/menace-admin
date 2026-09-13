@@ -133,12 +133,12 @@ export class LocalD1Fallback {
     ];
 
     this.tables.product_images = [
-      { id: 'img_001', product_id: 'prod_001', url: '/images/products/quiet-menace.png', alt: 'The Quiet Menace Tee Front', sort_order: 0 },
-      { id: 'img_002', product_id: 'prod_002', url: '/images/products/loud-menace.png', alt: 'The Loud Menace Tee Front', sort_order: 0 },
-      { id: 'img_003', product_id: 'prod_003', url: '/images/products/midnight-menace.png', alt: 'The Midnight Menace Tee Front', sort_order: 0 },
-      { id: 'img_004', product_id: 'prod_004', url: '/images/products/acid-menace.png', alt: 'The Acid Menace Tee Front', sort_order: 0 },
-      { id: 'img_005', product_id: 'prod_005', url: '/images/products/raw-edge.png', alt: 'The Raw Edge Boxy Tee Front', sort_order: 0 },
-      { id: 'img_006', product_id: 'prod_006', url: '/images/products/waffle-tee.png', alt: 'The Oversized Heavy Waffle Tee Front', sort_order: 0 },
+      { id: 'img_001', product_id: 'prod_001', url: '/images/products/quiet-menace-1.jpg', alt: 'The Quiet Menace Tee Front', sort_order: 0 },
+      { id: 'img_002', product_id: 'prod_002', url: '/images/products/loud-menace-1.jpg', alt: 'The Loud Menace Tee Front', sort_order: 0 },
+      { id: 'img_003', product_id: 'prod_003', url: '/images/products/midnight-menace-1.jpg', alt: 'The Midnight Menace Tee Front', sort_order: 0 },
+      { id: 'img_004', product_id: 'prod_004', url: '/images/products/acid-menace-1.jpg', alt: 'The Acid Menace Tee Front', sort_order: 0 },
+      { id: 'img_005', product_id: 'prod_005', url: '/images/products/raw-edge-boxy-1.jpg', alt: 'The Raw Edge Boxy Tee Front', sort_order: 0 },
+      { id: 'img_006', product_id: 'prod_006', url: '/images/products/heavy-waffle-1.jpg', alt: 'The Oversized Heavy Waffle Tee Front', sort_order: 0 },
     ];
 
     this.tables.customers = [

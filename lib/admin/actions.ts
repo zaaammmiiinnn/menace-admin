@@ -109,11 +109,16 @@ const productFormSchema = z.object({
 // Sync product mutations from Admin to Storefront
 async function syncProductToStorefront(action: 'upsert' | 'delete', product: any) {
   try {
-    const urls = [
+    const rawUrls = [
+      process.env.STOREFRONT_URL,
+      process.env.NEXT_PUBLIC_STOREFRONT_URL,
+      process.env.STORE_URL,
       process.env.NEXT_PUBLIC_STORE_URL,
       'http://localhost:3005',
       'http://localhost:3000',
-    ].filter(Boolean);
+    ].filter(Boolean) as string[];
+
+    const urls = Array.from(new Set(rawUrls));
 
     for (const baseUrl of urls) {
       fetch(`${baseUrl}/api/products/sync`, {

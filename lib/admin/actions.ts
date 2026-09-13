@@ -106,6 +106,27 @@ const productFormSchema = z.object({
   images: z.array(z.string()).default([]),
 });
 
+// Sync product mutations from Admin to Storefront
+async function syncProductToStorefront(action: 'upsert' | 'delete', product: any) {
+  try {
+    const urls = [
+      process.env.NEXT_PUBLIC_STORE_URL,
+      'http://localhost:3005',
+      'http://localhost:3000',
+    ].filter(Boolean);
+
+    for (const baseUrl of urls) {
+      fetch(`${baseUrl}/api/products/sync`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, product }),
+      }).catch(() => {});
+    }
+  } catch (err) {
+    // Non-blocking sync
+  }
+}
+
 export async function createProductAction(formData: any) {
   await requireAdmin();
   const parsed = productFormSchema.parse(formData);
@@ -158,6 +179,12 @@ export async function createProductAction(formData: any) {
     entity: 'products',
     entityId: id,
     details: `Created product "${parsed.name}" (${parsed.slug}) with ${parsed.variants.length} variants`,
+  });
+
+  // Sync to Storefront
+  await syncProductToStorefront('upsert', {
+    ...newProduct,
+    images: parsed.images,
   });
 
   invalidateAdminCache();
@@ -213,6 +240,12 @@ export async function updateProductAction(id: string, formData: any) {
     details: `Updated catalog specs for "${parsed.name}"`,
   });
 
+  // Sync to Storefront
+  await syncProductToStorefront('upsert', {
+    ...products[index],
+    images: parsed.images,
+  });
+
   invalidateAdminCache();
   revalidatePath('/products');
   revalidatePath(`/products/${id}`);
@@ -237,6 +270,9 @@ export async function toggleProductStatusAction(id: string, status: 'draft' | 'a
     details: `Updated status to ${status} for "${product.name}"`,
   });
 
+  // Sync to Storefront
+  await syncProductToStorefront('upsert', product);
+
   invalidateAdminCache();
   revalidatePath('/products');
   return { success: true };
@@ -257,6 +293,9 @@ export async function deleteProductAction(id: string) {
     entityId: id,
     details: `Deleted product "${product?.name || id}" and associated variant matrix`,
   });
+
+  // Sync delete to Storefront
+  await syncProductToStorefront('delete', { id });
 
   invalidateAdminCache();
   revalidatePath('/products');

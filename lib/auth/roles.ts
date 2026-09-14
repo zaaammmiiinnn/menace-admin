@@ -43,7 +43,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     const adminEmailsEnv = (
       process.env.ADMIN_EMAILS ||
       process.env.NEXT_PUBLIC_ADMIN_EMAILS ||
-      'zamin@menace.store,admin@menace.store,zamin@menance.store,admin@menance.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com'
+      'zamin@menace.store,admin@menace.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com'
     )
       .split(',')
       .map((e) => e.trim().toLowerCase())

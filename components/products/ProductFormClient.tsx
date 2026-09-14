@@ -113,7 +113,7 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
     setIsUploadingPhoto(true);
     toast.info('Accessing camera to photograph product sample...');
     setTimeout(() => {
-      const mockR2Url = `https://assets.menance.store/products/sample_${Date.now()}.png`;
+      const mockR2Url = `https://assets.menace.store/products/sample_${Date.now()}.png`;
       const currentImages = form.getValues('images') || [];
       form.setValue('images', [...currentImages, mockR2Url]);
       setIsUploadingPhoto(false);

@@ -7,7 +7,7 @@ export interface QueuedMutation {
   timestamp: number;
 }
 
-const QUEUE_STORAGE_KEY = 'menace_offline_queue_v1';
+const QUEUE_STORAGE_KEY = 'menance_offline_queue_v1';
 
 export function registerServiceWorker() {
   if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
@@ -53,14 +53,14 @@ export function queueOfflineMutation(mutation: Omit<QueuedMutation, 'id' | 'time
   }
 
   // Dispatch custom event for UI updates
-  window.dispatchEvent(new CustomEvent('menace-queue-updated', { detail: queue.length }));
+  window.dispatchEvent(new CustomEvent('menance-queue-updated', { detail: queue.length }));
   return item;
 }
 
 export function clearOfflineQueue() {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(QUEUE_STORAGE_KEY);
-  window.dispatchEvent(new CustomEvent('menace-queue-updated', { detail: 0 }));
+  window.dispatchEvent(new CustomEvent('menance-queue-updated', { detail: 0 }));
 }
 
 export async function requestPushPermission(): Promise<'granted' | 'denied' | 'default' | 'unsupported'> {

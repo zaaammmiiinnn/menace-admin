@@ -216,7 +216,7 @@ export function DiscountsClient({ initialDiscounts }: DiscountsClientProps) {
                   required
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  placeholder="e.g. MENACE20"
+                  placeholder="e.g. MENANCE20"
                   className="w-full h-9 px-3 bg-[#181818] border border-[#282828] focus:border-[#C6FF00] rounded-lg text-xs font-mono uppercase text-[#F5F1E8] outline-none"
                 />
               </div>

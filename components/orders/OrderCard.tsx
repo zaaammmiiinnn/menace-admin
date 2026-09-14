@@ -47,7 +47,7 @@ export function OrderCard({ order, onPack, onShip }: OrderCardProps) {
     if (navigator.share) {
       navigator.share({
         title: `Shipping Label ${order.id}`,
-        text: `Menace Shipping Label: Order ${order.id}\nCustomer: ${order.customerName}\nAddress: ${order.shipping_address}`,
+        text: `Menance Shipping Label: Order ${order.id}\nCustomer: ${order.customerName}\nAddress: ${order.shipping_address}`,
       }).catch(() => {});
     } else {
       window.print();
@@ -92,7 +92,7 @@ export function OrderCard({ order, onPack, onShip }: OrderCardProps) {
           </span>
         </div>
         <p className="text-xs text-[#F5F1E8] line-clamp-1">
-          {order.items?.[0]?.productName || 'Menace Oversized Silhouette'}
+          {order.items?.[0]?.productName || 'Menance Oversized Silhouette'}
           {order.items?.length > 1 ? ` + ${order.items.length - 1} more` : ''}
         </p>
       </div>

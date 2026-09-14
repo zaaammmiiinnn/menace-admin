@@ -23,7 +23,7 @@ export default function SignInPage() {
             OPERATIONS CONSOLE
           </div>
           <h1 className="text-3xl font-extrabold tracking-tighter text-[#F5F1E8]">
-            MENACE
+            MENANCE
           </h1>
           <p className="text-xs text-[#8A8A8A] uppercase tracking-wider font-mono">
             Authorized Admin & Staff Access Only

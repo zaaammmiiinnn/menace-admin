@@ -11,13 +11,14 @@ binding = "ASSETS"
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_ZmFpdGhmdWwtdGFkcG9sZS01MzYyLmNsZXJrLmFjY291bnRzLmRldiQ"
 NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = "/dashboard"
-ADMIN_EMAILS = "zamin@menace.store,admin@menace.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com"
+ADMIN_EMAILS = "zamin@menance.store,admin@menance.store,zamin@menace.store,admin@menace.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com"
 
-# Shared Cloudflare D1 Database with Menace Storefront
+# Shared Cloudflare D1 Database with MENANCE Storefront
 [[d1_databases]]
 binding = "DB"
 database_name = "menace-db"
 database_id = "5208d6ac-b7b7-41d2-bcd6-2a7a4962c8b0"
+migrations_dir = "lib/db/migrations"
 
 # Shared Cloudflare KV Cache
 [[kv_namespaces]]

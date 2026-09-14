@@ -17,7 +17,7 @@ export async function logAuditAction(params: {
     const entry = {
       id: `aud_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       userId: user?.id || 'system',
-      userEmail: user?.email || 'admin@menace.store',
+      userEmail: user?.email || 'admin@menance.store',
       action: params.action,
       entity: params.entity,
       entityId: params.entityId || null,

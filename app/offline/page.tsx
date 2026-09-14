@@ -13,7 +13,7 @@ export default function OfflinePage() {
 
         <div className="space-y-2">
           <div className="text-xs font-mono tracking-widest uppercase text-[#8A8A8A]">
-            MENACE / OFFLINE MODE
+            MENANCE / OFFLINE MODE
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-[#F5F1E8]">
             No signal. Try again.

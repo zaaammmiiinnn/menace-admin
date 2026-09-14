@@ -113,7 +113,7 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
     setIsUploadingPhoto(true);
     toast.info('Accessing camera to photograph product sample...');
     setTimeout(() => {
-      const mockR2Url = `https://assets.menace.store/products/sample_${Date.now()}.png`;
+      const mockR2Url = `https://assets.menance.store/products/sample_${Date.now()}.png`;
       const currentImages = form.getValues('images') || [];
       form.setValue('images', [...currentImages, mockR2Url]);
       setIsUploadingPhoto(false);
@@ -165,7 +165,7 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
                 <label className="text-xs font-medium text-[#F5F1E8]">Product Name</label>
                 <input
                   {...form.register('name')}
-                  placeholder="The Acid Menace Tee"
+                  placeholder="The Acid Menance Tee"
                   className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"
                 />
               </div>
@@ -174,7 +174,7 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
                 <label className="text-xs font-medium text-[#F5F1E8]">URL Slug</label>
                 <input
                   {...form.register('slug')}
-                  placeholder="acid-menace"
+                  placeholder="acid-menance"
                   className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs font-mono text-[#F5F1E8] outline-none"
                 />
               </div>

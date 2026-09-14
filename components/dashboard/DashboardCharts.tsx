@@ -40,7 +40,7 @@ export function DashboardCharts({ revenueChart, ordersByStatus }: DashboardChart
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={revenueChart} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
-                <linearGradient id="menaceRevenueGrad" x1="0" y1="0" x2="0" y2="1">
+                <linearGradient id="menanceRevenueGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#C6FF00" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="#C6FF00" stopOpacity={0} />
                 </linearGradient>
@@ -75,7 +75,7 @@ export function DashboardCharts({ revenueChart, ordersByStatus }: DashboardChart
                 stroke="#C6FF00"
                 strokeWidth={2}
                 fillOpacity={1}
-                fill="url(#menaceRevenueGrad)"
+                fill="url(#menanceRevenueGrad)"
               />
             </AreaChart>
           </ResponsiveContainer>

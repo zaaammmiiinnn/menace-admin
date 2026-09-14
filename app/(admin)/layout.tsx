@@ -12,7 +12,7 @@ export default async function AdminLayout({
 }) {
   const adminUser = await getAdminUser();
   const role = adminUser?.role === 'staff' ? 'staff' : 'admin';
-  const email = adminUser?.email || 'admin@menace.store';
+  const email = adminUser?.email || 'admin@menance.store';
   const name = adminUser?.name || 'Administrator';
 
   return (

@@ -38,8 +38,8 @@ export class LocalD1Fallback {
     this.tables.products = [
       {
         id: 'prod_001',
-        slug: 'quiet-menace',
-        name: 'The Quiet Menace Tee',
+        slug: 'quiet-menance',
+        name: 'The Quiet Menance Tee',
         description: 'No logo. No noise. Just the best damn tee you will ever own. Drop-shoulder, heavy weight, boxy fit.',
         price_inr: 1299,
         price_usd: 39,
@@ -51,8 +51,8 @@ export class LocalD1Fallback {
       },
       {
         id: 'prod_002',
-        slug: 'loud-menace',
-        name: 'The Loud Menace Tee',
+        slug: 'loud-menance',
+        name: 'The Loud Menance Tee',
         description: 'Big print, zero apologies. Front and center graphic that makes a statement before you even open your mouth.',
         price_inr: 1499,
         price_usd: 45,
@@ -64,8 +64,8 @@ export class LocalD1Fallback {
       },
       {
         id: 'prod_003',
-        slug: 'midnight-menace',
-        name: 'The Midnight Menace Tee',
+        slug: 'midnight-menance',
+        name: 'The Midnight Menance Tee',
         description: 'Blacked out everything. For those who operate after hours. Stealth logo hit, premium heavy cotton.',
         price_inr: 1399,
         price_usd: 42,
@@ -77,8 +77,8 @@ export class LocalD1Fallback {
       },
       {
         id: 'prod_004',
-        slug: 'acid-menace',
-        name: 'The Acid Menace Tee',
+        slug: 'acid-menance',
+        name: 'The Acid Menance Tee',
         description: 'High contrast neon hit. Designed for low light, flash photography, and standing out in a crowd of clones.',
         price_inr: 1499,
         price_usd: 45,
@@ -133,16 +133,16 @@ export class LocalD1Fallback {
     ];
 
     this.tables.product_images = [
-      { id: 'img_001', product_id: 'prod_001', url: '/images/products/quiet-menace-1.jpg', alt: 'The Quiet Menace Tee Front', sort_order: 0 },
-      { id: 'img_002', product_id: 'prod_002', url: '/images/products/loud-menace-1.jpg', alt: 'The Loud Menace Tee Front', sort_order: 0 },
-      { id: 'img_003', product_id: 'prod_003', url: '/images/products/midnight-menace-1.jpg', alt: 'The Midnight Menace Tee Front', sort_order: 0 },
-      { id: 'img_004', product_id: 'prod_004', url: '/images/products/acid-menace-1.jpg', alt: 'The Acid Menace Tee Front', sort_order: 0 },
+      { id: 'img_001', product_id: 'prod_001', url: '/images/products/quiet-menance-1.jpg', alt: 'The Quiet Menance Tee Front', sort_order: 0 },
+      { id: 'img_002', product_id: 'prod_002', url: '/images/products/loud-menance-1.jpg', alt: 'The Loud Menance Tee Front', sort_order: 0 },
+      { id: 'img_003', product_id: 'prod_003', url: '/images/products/midnight-menance-1.jpg', alt: 'The Midnight Menance Tee Front', sort_order: 0 },
+      { id: 'img_004', product_id: 'prod_004', url: '/images/products/acid-menance-1.jpg', alt: 'The Acid Menance Tee Front', sort_order: 0 },
       { id: 'img_005', product_id: 'prod_005', url: '/images/products/raw-edge-boxy-1.jpg', alt: 'The Raw Edge Boxy Tee Front', sort_order: 0 },
       { id: 'img_006', product_id: 'prod_006', url: '/images/products/heavy-waffle-1.jpg', alt: 'The Oversized Heavy Waffle Tee Front', sort_order: 0 },
     ];
 
     this.tables.customers = [
-      { id: 'cust_001', clerk_user_id: 'user_clerk_001', email: 'zamin@menace.store', name: 'Zamin Askari', created_at: 1789000000000, total_spent: 5497 },
+      { id: 'cust_001', clerk_user_id: 'user_clerk_001', email: 'zamin@menance.store', name: 'Zamin Askari', created_at: 1789000000000, total_spent: 5497 },
       { id: 'cust_002', clerk_user_id: 'user_clerk_002', email: 'alex.v@hyperpop.io', name: 'Alex Vance', created_at: 1789100000000, total_spent: 2798 },
       { id: 'cust_003', clerk_user_id: 'user_clerk_003', email: 'kai.orbit@tokyo.net', name: 'Kai Takahashi', created_at: 1789150000000, total_spent: 1599 },
       { id: 'cust_004', clerk_user_id: 'user_clerk_004', email: 'riya.sharma@mumbai.co', name: 'Riya Sharma', created_at: 1789180000000, total_spent: 4198 },
@@ -218,7 +218,7 @@ export class LocalD1Fallback {
     ];
 
     this.tables.discount_codes = [
-      { id: 'disc_001', code: 'MENACE10', type: 'percentage', value: 10, min_order: 1299, max_uses: 500, uses: 42, expires_at: 1800000000000, active: 1 },
+      { id: 'disc_001', code: 'MENANCE10', type: 'percentage', value: 10, min_order: 1299, max_uses: 500, uses: 42, expires_at: 1800000000000, active: 1 },
       { id: 'disc_002', code: 'VIP20', type: 'percentage', value: 20, min_order: 2500, max_uses: 100, uses: 18, expires_at: 1800000000000, active: 1 },
       { id: 'disc_003', code: 'ACID500', type: 'fixed', value: 500, min_order: 3000, max_uses: 50, uses: 7, expires_at: 1800000000000, active: 1 },
     ];
@@ -230,16 +230,16 @@ export class LocalD1Fallback {
     ];
 
     this.tables.settings = [
-      { key: 'store_name', value: 'MENACE', updated_at: 1789200000000 },
+      { key: 'store_name', value: 'MENANCE', updated_at: 1789200000000 },
       { key: 'tagline', value: 'Not for everyone.', updated_at: 1789200000000 },
       { key: 'primary_currency', value: 'INR', updated_at: 1789200000000 },
       { key: 'free_shipping_threshold', value: '2999', updated_at: 1789200000000 },
       { key: 'standard_shipping_rate', value: '149', updated_at: 1789200000000 },
       { key: 'gst_percentage', value: '18', updated_at: 1789200000000 },
       { key: 'staff_roles', value: JSON.stringify([
-        { email: 'staff@menace.store', role: 'staff', name: 'Staff Associate' },
-        { email: 'ops@menace.store', role: 'staff', name: 'Operations Lead' },
-        { email: 'zamin@menace.store', role: 'admin', name: 'Zamin Askari' }
+        { email: 'staff@menance.store', role: 'staff', name: 'Staff Associate' },
+        { email: 'ops@menance.store', role: 'staff', name: 'Operations Lead' },
+        { email: 'zamin@menance.store', role: 'admin', name: 'Zamin Askari' }
       ]), updated_at: 1789200000000 },
     ];
 
@@ -247,7 +247,7 @@ export class LocalD1Fallback {
       {
         id: 'aud_001',
         user_id: 'sys_seed',
-        user_email: 'admin@menace.store',
+        user_email: 'admin@menance.store',
         action: 'STORE_INITIALIZED',
         entity: 'store',
         entity_id: 'drop_001',

@@ -50,7 +50,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const conversionRate = 3.8;
   const lowStockVariants = variants.filter((v: any) => v.stock < 10);
 
-  // 30 days revenue chart data (realistic timeline for Menace drop)
+  // 30 days revenue chart data (realistic timeline for Menance drop)
   const revenueChart: { date: string; revenue: number; orders: number }[] = [];
   const now = Date.now();
   for (let i = 29; i >= 0; i--) {
@@ -82,7 +82,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const recentOrders = orders.slice(0, 10).map((o: any) => {
     const cust = customers.find((c: any) => c.id === o.customer_id) || {
       name: 'Guest Customer',
-      email: 'guest@menace.store',
+      email: 'guest@menance.store',
     };
     return {
       ...o,
@@ -93,10 +93,10 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
   const topProducts = [
     { name: 'The Oversized Heavy Waffle Tee', units: 142, revenue: 227058, sku: 'MNC-WF-BLK' },
-    { name: 'The Quiet Menace Tee', units: 118, revenue: 153282, sku: 'MNC-QM-BLK' },
-    { name: 'The Loud Menace Tee', units: 94, revenue: 140906, sku: 'MNC-LM-WBLK' },
-    { name: 'The Acid Menace Tee', units: 68, revenue: 101932, sku: 'MNC-AM-ACD' },
-    { name: 'The Midnight Menace Tee', units: 52, revenue: 72748, sku: 'MNC-MM-BLK' },
+    { name: 'The Quiet Menance Tee', units: 118, revenue: 153282, sku: 'MNC-QM-BLK' },
+    { name: 'The Loud Menance Tee', units: 94, revenue: 140906, sku: 'MNC-LM-WBLK' },
+    { name: 'The Acid Menance Tee', units: 68, revenue: 101932, sku: 'MNC-AM-ACD' },
+    { name: 'The Midnight Menance Tee', units: 52, revenue: 72748, sku: 'MNC-MM-BLK' },
   ];
 
   const stats: DashboardStats = {
@@ -132,7 +132,7 @@ export async function getOrders(statusFilter?: string) {
   return orders.map((o: any) => {
     const customer = customers.find((c: any) => c.id === o.customer_id) || {
       name: 'Guest User',
-      email: 'customer@menace.store',
+      email: 'customer@menance.store',
     };
 
     const orderItemsList = items
@@ -143,7 +143,7 @@ export async function getOrders(statusFilter?: string) {
         return {
           ...item,
           variant,
-          productName: product?.name || 'Menace Essential Tee',
+          productName: product?.name || 'Menance Essential Tee',
         };
       });
 
@@ -170,7 +170,7 @@ export async function getOrderById(orderId: string) {
 
   const customer = customers.find((c: any) => c.id === order.customer_id) || {
     name: 'Customer',
-    email: 'customer@menace.store',
+    email: 'customer@menance.store',
   };
 
   const orderItemsList = items

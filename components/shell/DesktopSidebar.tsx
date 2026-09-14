@@ -24,7 +24,7 @@ interface DesktopSidebarProps {
 
 export function DesktopSidebar({
   userRole = 'admin',
-  userEmail = 'admin@menace.store',
+  userEmail = 'admin@menance.store',
   userName = 'Admin',
 }: DesktopSidebarProps) {
   const pathname = usePathname();
@@ -51,7 +51,7 @@ export function DesktopSidebar({
             M
           </div>
           <div>
-            <div className="text-sm font-extrabold tracking-tight text-[#F5F1E8]">MENACE</div>
+            <div className="text-sm font-extrabold tracking-tight text-[#F5F1E8]">MENANCE</div>
             <div className="text-[10px] font-mono tracking-widest text-[#8A8A8A] uppercase">
               CONSOLE // {userRole}
             </div>

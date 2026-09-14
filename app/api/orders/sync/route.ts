@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
           id: customerId,
           clerk_user_id: customer.clerkUserId || null,
           email: customer.email,
-          name: customer.name || 'Menace Customer',
+          name: customer.name || 'Menance Customer',
           created_at: Date.now(),
           total_spent: order.totalInr || order.total_inr || 0,
         });

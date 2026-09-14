@@ -1,7 +1,7 @@
 {
-  "name": "MENACE Admin Portal",
-  "short_name": "MENACE Ops",
-  "description": "Dense, real-time command center & order fulfillment for MENACE apparel",
+  "name": "MENANCE Admin Portal",
+  "short_name": "MENANCE Ops",
+  "description": "Dense, real-time command center & order fulfillment for MENANCE apparel",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#0A0A0A",

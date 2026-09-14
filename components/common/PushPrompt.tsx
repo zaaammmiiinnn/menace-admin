@@ -25,8 +25,8 @@ export function PushPrompt() {
       // Send sample notification
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then((reg) => {
-          reg.showNotification('MENACE Ops Alert', {
-            body: 'New order: ₹1,499 — The Quiet Menace Tee',
+          reg.showNotification('MENANCE Ops Alert', {
+            body: 'New order: ₹1,499 — The Quiet Menance Tee',
             icon: '/icons/icon-192.png',
             badge: '/icons/icon-192.png',
           });
@@ -46,11 +46,11 @@ export function PushPrompt() {
     const stubs = {
       order: {
         title: '⚡ New Order MNC-8826',
-        body: 'New order: ₹1,499 — The Quiet Menace Tee (Size M)',
+        body: 'New order: ₹1,499 — The Quiet Menance Tee (Size M)',
       },
       stock: {
         title: '⚠️ Low Stock Alert',
-        body: 'Midnight Menace M: 3 left in fulfillment rack',
+        body: 'Midnight Menance M: 3 left in fulfillment rack',
       },
       drop: {
         title: '🔥 Drop Live Telemetry',

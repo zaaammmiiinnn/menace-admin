@@ -1,6 +1,6 @@
-# MENACE Admin Portal — Production Cockpit
+# MENANCE Admin Portal — Production Cockpit
 
-The **MENACE Admin Portal** is a high-density, real-time command center and order fulfillment cockpit for Gen Z apparel brand **MENACE**. Built with **Next.js 15 App Router**, **Cloudflare D1**, **Clerk RBAC**, **TanStack Table**, and **PWA Offline Sync**.
+The **MENANCE Admin Portal** is a high-density, real-time command center and order fulfillment cockpit for Gen Z apparel brand **MENANCE**. Built with **Next.js 15 App Router**, **Cloudflare D1**, **Clerk RBAC**, **TanStack Table**, and **PWA Offline Sync**.
 
 ---
 
@@ -37,7 +37,7 @@ The interface automatically switches between two distinct operational modes usin
 
 ## 🔐 Auth & Role Matrix
 
-Shares the **SAME Clerk tenant** as the Menace Storefront.
+Shares the **SAME Clerk tenant** as the Menance Storefront.
 
 | Capability / Screen | Unauthenticated / Customer | Staff Role | Admin Role |
 |---|:---:|:---:|:---:|
@@ -53,7 +53,7 @@ Shares the **SAME Clerk tenant** as the Menace Storefront.
 ### Bootstrap Admin Access
 Set your email in `ADMIN_EMAILS` inside `.env.local` or `wrangler.toml`:
 ```bash
-ADMIN_EMAILS="zamin@menace.store,admin@menace.store"
+ADMIN_EMAILS="zamin@menance.store,admin@menance.store"
 ```
 Or set `publicMetadata: { "role": "admin" }` in your Clerk Dashboard.
 
@@ -67,7 +67,7 @@ Shares the exact schema with the storefront:
 - `discount_codes`, `inventory_log`, `settings`, `audit_log`
 
 ### Lazy-Initialization
-The database client (`/lib/db/index.ts`) initializes lazily on first query to **completely prevent Cloudflare 1102 cold-start errors**. Outside of Cloudflare Workers, it falls back seamlessly to an in-memory seeded store with authentic Menace silhouettes.
+The database client (`/lib/db/index.ts`) initializes lazily on first query to **completely prevent Cloudflare 1102 cold-start errors**. Outside of Cloudflare Workers, it falls back seamlessly to an in-memory seeded store with authentic Menance silhouettes.
 
 ---
 

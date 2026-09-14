@@ -108,7 +108,7 @@ export function SettingsClient({ initialSettings, initialAuditLogs }: SettingsCl
             <label className="text-xs font-medium text-[#F5F1E8]">Store Name</label>
             <input
               type="text"
-              value={settings.store_name || 'MENACE'}
+              value={settings.store_name || 'MENANCE'}
               onChange={(e) => setSettings({ ...settings, store_name: e.target.value })}
               className="w-full h-9 px-3 bg-[#181818] border border-[#262626] rounded-lg text-xs font-mono text-[#F5F1E8] outline-none"
             />
@@ -185,7 +185,7 @@ export function SettingsClient({ initialSettings, initialAuditLogs }: SettingsCl
           <input
             type="email"
             required
-            placeholder="operator@menace.store"
+            placeholder="operator@menance.store"
             value={newEmail}
             onChange={(e) => setNewEmail(e.target.value)}
             className="flex-1 h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"

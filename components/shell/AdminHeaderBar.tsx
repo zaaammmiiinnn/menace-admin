@@ -28,12 +28,12 @@ export function AdminHeaderBar({
 
     window.addEventListener('online', updateOnline);
     window.addEventListener('offline', updateOnline);
-    window.addEventListener('menace-queue-updated', updateQueue);
+    window.addEventListener('menance-queue-updated', updateQueue);
 
     return () => {
       window.removeEventListener('online', updateOnline);
       window.removeEventListener('offline', updateOnline);
-      window.removeEventListener('menace-queue-updated', updateQueue);
+      window.removeEventListener('menance-queue-updated', updateQueue);
     };
   }, []);
 
@@ -62,7 +62,7 @@ export function AdminHeaderBar({
           <div className="w-6 h-6 rounded bg-[#C6FF00] flex items-center justify-center font-black text-black text-xs">
             M
           </div>
-          <span className="text-xs font-black tracking-tight text-[#F5F1E8]">MENACE</span>
+          <span className="text-xs font-black tracking-tight text-[#F5F1E8]">MENANCE</span>
         </Link>
         <div className="hidden sm:block text-xs font-mono text-[#8A8A8A]">
           OPERATIONS // {userRole.toUpperCase()} NODE

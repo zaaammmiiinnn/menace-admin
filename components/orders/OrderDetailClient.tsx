@@ -71,7 +71,7 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
     if (navigator.share) {
       navigator.share({
         title: `Shipping Label - ${order.id}`,
-        text: `MENACE APPAREL\nOrder: ${order.id}\nCustomer: ${order.customer?.name}\nAddress: ${order.shipping_address}\nItems: ${order.items?.length || 1}`,
+        text: `MENANCE APPAREL\nOrder: ${order.id}\nCustomer: ${order.customer?.name}\nAddress: ${order.shipping_address}\nItems: ${order.items?.length || 1}`,
       }).catch(() => {});
     } else {
       window.print();
@@ -161,7 +161,7 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
                 <div key={item.id} className="p-4 flex items-center justify-between gap-3">
                   <div className="space-y-1">
                     <div className="text-xs font-bold text-[#F5F1E8]">
-                      {item.product?.name || 'Menace Garment'}
+                      {item.product?.name || 'Menance Garment'}
                     </div>
                     <div className="text-[11px] font-mono text-[#8A8A8A]">
                       Size: {item.variant?.size || 'Standard'} • Color: {item.variant?.color || 'Black'} • SKU: {item.variant?.sku || 'MNC-TEE'}

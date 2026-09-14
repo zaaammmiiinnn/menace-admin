@@ -22,15 +22,15 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'MENACE Admin — Operations & Fulfillment',
-    template: '%s | MENACE Admin',
+    default: 'MENANCE Admin — Operations & Fulfillment',
+    template: '%s | MENANCE Admin',
   },
-  description: 'High-density operations console and real-time fulfillment portal for MENACE apparel',
+  description: 'High-density operations console and real-time fulfillment portal for MENANCE apparel',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'MENACE Admin',
+    title: 'MENANCE Admin',
   },
   formatDetection: {
     telephone: false,

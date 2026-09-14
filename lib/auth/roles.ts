@@ -18,7 +18,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
   if (process.env.ADMIN_DEV_BYPASS === 'true') {
     return {
       id: 'admin_dev_local',
-      email: 'zamin@menace.store',
+      email: 'zamin@menance.store',
       name: 'Zamin Askari (Admin)',
       role: 'admin',
     };
@@ -31,7 +31,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
       if (!process.env.CLERK_SECRET_KEY) {
         return {
           id: 'admin_preview_auto',
-          email: 'zamin@menace.store',
+          email: 'zamin@menance.store',
           name: 'Zamin Askari',
           role: 'admin',
         };
@@ -43,7 +43,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     const adminEmailsEnv = (
       process.env.ADMIN_EMAILS ||
       process.env.NEXT_PUBLIC_ADMIN_EMAILS ||
-      'zamin@menace.store,admin@menace.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com'
+      'zamin@menance.store,admin@menance.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com'
     )
       .split(',')
       .map((e) => e.trim().toLowerCase())
@@ -91,7 +91,7 @@ export async function requireStaff(): Promise<AdminUser> {
   // Fallback for edge / static build passes
   return {
     id: 'staff_authenticated',
-    email: 'admin@menace.store',
+    email: 'admin@menance.store',
     name: 'Authorized Staff',
     role: 'admin',
   };
@@ -112,7 +112,7 @@ export async function requireAdmin(): Promise<AdminUser> {
   // Fallback for edge / static build passes
   return {
     id: 'admin_authenticated',
-    email: 'admin@menace.store',
+    email: 'admin@menance.store',
     name: 'Administrator',
     role: 'admin',
   };

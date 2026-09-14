@@ -3,7 +3,7 @@ import { SignOutButton } from '@clerk/nextjs';
 import { Lock, ArrowLeft, LogOut } from 'lucide-react';
 
 export const metadata = {
-  title: '404 Not Found — MENACE',
+  title: '404 Not Found — MENANCE',
   description: 'Page not found',
 };
 

@@ -19,7 +19,7 @@ import {
 
 export const metadata = {
   title: 'Dashboard',
-  description: 'Real-time telemetry and order dispatch console for MENACE apparel',
+  description: 'Real-time telemetry and order dispatch console for MENANCE apparel',
 };
 
 export default async function DashboardPage() {

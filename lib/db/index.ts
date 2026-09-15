@@ -3,15 +3,43 @@ import * as schema from './schema';
 
 // Helper to get the Cloudflare D1 binding from environment
 export function getD1Database(): any {
+  // 1. OpenNext Cloudflare adapter (primary method on Workers)
+  try {
+    const { getCloudflareContext } = require('@opennextjs/cloudflare');
+    const ctx = getCloudflareContext();
+    if (ctx?.env?.DB) return ctx.env.DB;
+  } catch {}
+  // 2. Fallback: check globalThis patterns
   if (typeof globalThis !== 'undefined') {
     const g = globalThis as any;
     if (g.__env__?.DB) return g.__env__.DB;
     if (g.DB) return g.DB;
     if (g.env?.DB) return g.env.DB;
+    if (g.process?.env?.DB) return g.process.env.DB;
   }
   if (typeof process !== 'undefined' && process.env) {
     const p = process.env as any;
     if (p.DB) return p.DB;
+  }
+  return null;
+}
+
+// Helper to get the Cloudflare KV binding from environment
+export function getKVDatabase(): any {
+  try {
+    const { getCloudflareContext } = require('@opennextjs/cloudflare');
+    const ctx = getCloudflareContext();
+    if (ctx?.env?.MENACE_KV) return ctx.env.MENACE_KV;
+    if (ctx?.env?.MENANCE_KV) return ctx.env.MENANCE_KV;
+  } catch {}
+  if (typeof globalThis !== 'undefined') {
+    const g = globalThis as any;
+    if (g.__env__?.MENACE_KV) return g.__env__.MENACE_KV;
+    if (g.__env__?.MENANCE_KV) return g.__env__.MENANCE_KV;
+    if (g.MENACE_KV) return g.MENACE_KV;
+    if (g.MENANCE_KV) return g.MENANCE_KV;
+    if (g.env?.MENACE_KV) return g.env.MENACE_KV;
+    if (g.env?.MENANCE_KV) return g.env.MENANCE_KV;
   }
   return null;
 }

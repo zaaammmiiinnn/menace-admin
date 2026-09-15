@@ -39,6 +39,14 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.131.2"
+  },
+  "allowScripts": {
+    "workerd@1.20260911.1": true,
+    "@clerk/shared@3.47.8": true,
+    "unrs-resolver@1.12.2": true,
+    "fsevents@2.3.3": true,
+    "esbuild@0.25.4": true
   }
 }

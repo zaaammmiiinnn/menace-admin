@@ -12,6 +12,12 @@ export const products = sqliteTable('products', {
   category: text('category').notNull().default('tees'),
   dropId: text('drop_id'),
   status: text('status', { enum: ['draft', 'active', 'archived'] }).notNull().default('active'),
+  backQuote: text('back_quote'),
+  frontLogo: text('front_logo').default('MENANCE®'),
+  fabricGsm: integer('fabric_gsm').default(240),
+  fabricType: text('fabric_type'),
+  fit: text('fit').default('Boxy Oversized'),
+  sleeveType: text('sleeve_type'),
   createdAt: integer('created_at').notNull(),
   updatedAt: integer('updated_at').notNull(),
 });

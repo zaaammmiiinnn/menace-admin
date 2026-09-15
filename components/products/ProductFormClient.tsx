@@ -30,6 +30,12 @@ const productSchema = z.object({
   category: z.string().default('tees'),
   dropId: z.string().default('drop_001'),
   status: z.enum(['draft', 'active', 'archived']).default('active'),
+  backQuote: z.string().optional().default(''),
+  frontLogo: z.string().optional().default('MENANCE®'),
+  fabricGsm: z.coerce.number().optional().default(240),
+  fabricType: z.string().optional().default('Waffle Knit'),
+  fit: z.string().optional().default('Boxy Oversized'),
+  sleeveType: z.string().optional().default('Half Sleeve'),
   variants: z.array(
     z.object({
       size: z.string(),
@@ -80,6 +86,12 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
       category: initialProduct?.category || 'tees',
       dropId: initialProduct?.drop_id || 'drop_001',
       status: initialProduct?.status || 'active',
+      backQuote: initialProduct?.back_quote || initialProduct?.backQuote || '',
+      frontLogo: initialProduct?.front_logo || initialProduct?.frontLogo || 'MENANCE®',
+      fabricGsm: initialProduct?.fabric_gsm || initialProduct?.fabricGsm || 240,
+      fabricType: initialProduct?.fabric_type || initialProduct?.fabricType || 'Waffle Knit',
+      fit: initialProduct?.fit || 'Boxy Oversized',
+      sleeveType: initialProduct?.sleeve_type || initialProduct?.sleeveType || 'Half Sleeve',
       variants: defaultVariants,
       images: initialProduct?.images?.map((img: any) => img.url) || [],
     },
@@ -206,6 +218,72 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
                   type="number"
                   {...form.register('priceUsd')}
                   className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs font-mono tabular-nums text-[#F5F1E8] outline-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Textile & Design Metadata */}
+          <div className="rounded-xl border border-[#222222] bg-[#121212] p-4 sm:p-5 space-y-4">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#8A8A8A]">
+              TEXTILE &amp; BRAND ARCHITECTURE
+            </span>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#F5F1E8]">Back Quote</label>
+                <input
+                  {...form.register('backQuote')}
+                  placeholder="MIND YOUR BUSINESS."
+                  className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#F5F1E8]">Front Logo</label>
+                <input
+                  {...form.register('frontLogo')}
+                  placeholder="MENANCE®"
+                  className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#F5F1E8]">Fabric GSM</label>
+                <input
+                  type="number"
+                  {...form.register('fabricGsm')}
+                  placeholder="240"
+                  className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs font-mono text-[#F5F1E8] outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#F5F1E8]">Fabric Type</label>
+                <input
+                  {...form.register('fabricType')}
+                  placeholder="Waffle Knit"
+                  className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#F5F1E8]">Fit</label>
+                <input
+                  {...form.register('fit')}
+                  placeholder="Boxy Oversized"
+                  className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-[#F5F1E8]">Sleeve Type</label>
+                <input
+                  {...form.register('sleeveType')}
+                  placeholder="Half Sleeve"
+                  className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"
                 />
               </div>
             </div>

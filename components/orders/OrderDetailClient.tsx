@@ -15,8 +15,9 @@ import {
   User,
   ExternalLink,
 } from 'lucide-react';
-import { updateOrderStatusAction } from '@/lib/admin/actions';
+import { updateOrderStatusAction, deleteOrderAction } from '@/lib/admin/actions';
 import { toast } from 'sonner';
+import { Trash2 } from 'lucide-react';
 
 interface OrderDetailClientProps {
   order: any;
@@ -27,6 +28,7 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
   const [trackingInput, setTrackingInput] = useState(order.tracking_number || '');
   const [isUpdating, setIsUpdating] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
   const handleStatusChange = async (newStatus: any) => {
@@ -53,6 +55,21 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
       toast.error('Failed to save tracking');
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDeleteOrder = async () => {
+    if (!confirm(`Are you sure you want to permanently delete order ${order.id}? This cannot be undone.`)) {
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      await deleteOrderAction(order.id);
+      toast.success(`Order ${order.id} deleted successfully`);
+      router.push('/orders');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete order');
+      setIsDeleting(false);
     }
   };
 
@@ -110,6 +127,14 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
           >
             <Printer className="w-3.5 h-3.5 text-[#C6FF00]" />
             Print Shipping Label
+          </button>
+          <button
+            onClick={handleDeleteOrder}
+            disabled={isDeleting}
+            className="h-8 px-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>{isDeleting ? 'Deleting...' : 'Delete Order'}</span>
           </button>
         </div>
       </div>

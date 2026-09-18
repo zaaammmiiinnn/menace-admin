@@ -193,6 +193,46 @@ export async function markOrderShippedAction(orderId: string, trackingNumber?: s
   return await updateOrderStatusAction(orderId, 'shipped', trackingNumber);
 }
 
+export async function deleteOrderAction(orderId: string) {
+  await requireAdmin();
+
+  try {
+    const db = getDb();
+    await db.delete(orderItems).where(eq(orderItems.orderId, orderId));
+    await db.delete(orders).where(eq(orders.id, orderId));
+
+    await logAuditAction({
+      action: 'DELETE_ORDER',
+      entity: 'orders',
+      entityId: orderId,
+      details: `Permanently deleted order ${orderId} and associated items.`,
+    });
+
+    invalidateAdminCache();
+    revalidatePath('/orders');
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (err: any) {
+    console.error('[deleteOrderAction] D1 failed, falling back:', err);
+    const store = getLocalStore();
+    const ordersData = store.getTable('orders');
+    const index = ordersData.findIndex((o: any) => o.id === orderId);
+    if (index !== -1) {
+      ordersData.splice(index, 1);
+    }
+    const itemsData = store.getTable('order_items');
+    for (let i = itemsData.length - 1; i >= 0; i--) {
+      if (itemsData[i].order_id === orderId) {
+        itemsData.splice(i, 1);
+      }
+    }
+    invalidateAdminCache();
+    revalidatePath('/orders');
+    revalidatePath('/dashboard');
+    return { success: true };
+  }
+}
+
 // --- PRODUCT MUTATIONS (Admin Only) ---
 
 const productFormSchema = z.object({

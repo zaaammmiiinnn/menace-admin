@@ -60,7 +60,7 @@ export async function logAuditAction(params: {
   }
 }
 
-// --- ORDER MUTATIONS (Staff & Admin) ---
+import { sendOrderEmail } from '@/lib/email/templates';
 
 export async function updateOrderStatusAction(orderId: string, status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled', trackingNumber?: string) {
   await requireStaff();
@@ -93,6 +93,63 @@ export async function updateOrderStatusAction(orderId: string, status: 'pending'
       entityId: orderId,
       details: `Transitioned order ${orderId} from ${prevStatus} to ${status}${trackingNumber ? ` (Tracking: ${trackingNumber})` : ''}`,
     });
+
+    // When order is marked as shipped, dispatch shipping confirmation email to customer
+    if (status === 'shipped') {
+      try {
+        const orderObj = existing[0];
+        let customerEmail = '';
+        let customerName = 'Customer';
+
+        if (orderObj.customerId) {
+          const cust = await db.select().from(customers).where(eq(customers.id, orderObj.customerId));
+          if (cust.length) {
+            customerEmail = cust[0].email;
+            customerName = cust[0].name || customerName;
+          }
+        }
+
+        const itemsRows = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+        const formattedItems = itemsRows.map((it: any) => ({
+          name: 'MENANCE Silhouette',
+          size: 'M',
+          color: 'Black',
+          quantity: Number(it.quantity) || 1,
+          price: Number(it.priceAtPurchase || 0),
+        }));
+
+        let shippingAddress = { line1: '', city: '', state: '', pincode: '', country: 'India' };
+        try {
+          if (typeof orderObj.shippingAddress === 'string') {
+            shippingAddress = JSON.parse(orderObj.shippingAddress);
+          }
+        } catch {}
+
+        const activeTracking =
+          trackingNumber || orderObj.trackingNumber || `TRK-MNC-${Date.now().toString(36).toUpperCase()}`;
+
+        if (customerEmail) {
+          await sendOrderEmail({
+            to: customerEmail,
+            type: 'shipping',
+            trackingNumber: activeTracking,
+            data: {
+              orderId,
+              customerName,
+              customerEmail,
+              items: formattedItems,
+              subtotalInr: Number(orderObj.totalInr || 0),
+              shippingInr: 0,
+              totalInr: Number(orderObj.totalInr || 0),
+              shippingAddress,
+            },
+          });
+          console.log(`[Admin Action] Dispatched shipping notification email to ${customerEmail} for order ${orderId}`);
+        }
+      } catch (emailErr) {
+        console.error('[Admin Action] Failed to dispatch shipping notification email:', emailErr);
+      }
+    }
 
     invalidateAdminCache();
     revalidatePath('/orders');

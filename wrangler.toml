@@ -12,6 +12,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_ZmFpdGhmdWwtdGFkcG9sZS01MzYyLmNsZXJ
 NEXT_PUBLIC_CLERK_SIGN_IN_URL = "/sign-in"
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL = "/dashboard"
 ADMIN_EMAILS = "zamin@menance.store,admin@menance.store,zamin@menace.store,admin@menace.store,zaminaskari.work@gmail.com,askarizamin110@gmail.com"
+RESEND_FROM_EMAIL = "MENANCE <orders@wearmenance.in>"
 
 # Shared Cloudflare D1 Database with MENANCE Storefront
 [[d1_databases]]

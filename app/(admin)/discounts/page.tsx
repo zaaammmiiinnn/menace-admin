@@ -8,6 +8,9 @@ export const metadata = {
   description: 'Manage brand coupon codes, percentage thresholds, and redemptions',
 };
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function DiscountsPage() {
   const discounts = await getDiscounts();
 

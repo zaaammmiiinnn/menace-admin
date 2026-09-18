@@ -124,13 +124,84 @@ export function SettingsClient({ initialSettings, initialAuditLogs }: SettingsCl
             />
           </div>
 
+          {/* Shipping Policy Mode Option */}
+          <div className="col-span-1 sm:col-span-2 pt-2 border-t border-[#1F1F1F] space-y-2.5">
+            <div>
+              <label className="text-xs font-bold text-[#F5F1E8] uppercase tracking-wider block">
+                Shipping Delivery Policy
+              </label>
+              <p className="text-[11px] text-[#8A8A8A]">
+                Toggle between free complimentary delivery or flat-rate standard delivery pan-India.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setSettings({ ...settings, shipping_type: 'free', standard_shipping_rate: '0' })}
+                className={`p-3.5 rounded-lg border text-left transition-all ${
+                  (settings.shipping_type === 'free' || (!settings.shipping_type && settings.standard_shipping_rate === '0'))
+                    ? 'bg-[#C6FF00]/10 border-[#C6FF00]'
+                    : 'bg-[#181818] border-[#262626] hover:border-[#383838]'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold font-mono ${
+                    (settings.shipping_type === 'free' || (!settings.shipping_type && settings.standard_shipping_rate === '0'))
+                      ? 'text-[#C6FF00]'
+                      : 'text-[#F5F1E8]'
+                  }`}>
+                    ⚡️ FREE SHIPPING (ALL ORDERS)
+                  </span>
+                  {(settings.shipping_type === 'free' || (!settings.shipping_type && settings.standard_shipping_rate === '0')) && (
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#C6FF00] text-black">
+                      ACTIVE
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#8A8A8A] mt-1.5">
+                  Customers pay ₹0 for delivery across all orders.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSettings({ ...settings, shipping_type: 'paid', standard_shipping_rate: settings.standard_shipping_rate === '0' ? '99' : settings.standard_shipping_rate })}
+                className={`p-3.5 rounded-lg border text-left transition-all ${
+                  settings.shipping_type === 'paid' || (!settings.shipping_type && settings.standard_shipping_rate !== '0')
+                    ? 'bg-[#C6FF00]/10 border-[#C6FF00]'
+                    : 'bg-[#181818] border-[#262626] hover:border-[#383838]'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`text-xs font-bold font-mono ${
+                    settings.shipping_type === 'paid' || (!settings.shipping_type && settings.standard_shipping_rate !== '0')
+                      ? 'text-[#C6FF00]'
+                      : 'text-[#F5F1E8]'
+                  }`}>
+                    📦 PAID / FLAT RATE SHIPPING
+                  </span>
+                  {(settings.shipping_type === 'paid' || (!settings.shipping_type && settings.standard_shipping_rate !== '0')) && (
+                    <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-[#C6FF00] text-black">
+                      ACTIVE
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-[#8A8A8A] mt-1.5">
+                  Charge standard delivery fee until order meets threshold.
+                </p>
+              </button>
+            </div>
+          </div>
+
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-[#F5F1E8]">Free Shipping Threshold (₹)</label>
             <input
               type="number"
-              value={settings.free_shipping_threshold || '2999'}
+              disabled={settings.shipping_type === 'free' || (!settings.shipping_type && settings.standard_shipping_rate === '0')}
+              value={settings.free_shipping_threshold || '1499'}
               onChange={(e) => setSettings({ ...settings, free_shipping_threshold: e.target.value })}
-              className="w-full h-9 px-3 bg-[#181818] border border-[#262626] rounded-lg text-xs font-mono tabular-nums text-[#F5F1E8] outline-none"
+              className="w-full h-9 px-3 bg-[#181818] border border-[#262626] rounded-lg text-xs font-mono tabular-nums text-[#F5F1E8] outline-none disabled:opacity-40 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -138,9 +209,10 @@ export function SettingsClient({ initialSettings, initialAuditLogs }: SettingsCl
             <label className="text-xs font-medium text-[#F5F1E8]">Standard Shipping Rate (₹)</label>
             <input
               type="number"
-              value={settings.standard_shipping_rate || '149'}
+              disabled={settings.shipping_type === 'free' || (!settings.shipping_type && settings.standard_shipping_rate === '0')}
+              value={settings.shipping_type === 'free' || (!settings.shipping_type && settings.standard_shipping_rate === '0') ? '0' : (settings.standard_shipping_rate || '99')}
               onChange={(e) => setSettings({ ...settings, standard_shipping_rate: e.target.value })}
-              className="w-full h-9 px-3 bg-[#181818] border border-[#262626] rounded-lg text-xs font-mono tabular-nums text-[#F5F1E8] outline-none"
+              className="w-full h-9 px-3 bg-[#181818] border border-[#262626] rounded-lg text-xs font-mono tabular-nums text-[#F5F1E8] outline-none disabled:opacity-40 disabled:cursor-not-allowed"
             />
           </div>
 

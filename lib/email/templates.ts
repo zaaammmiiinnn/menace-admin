@@ -21,12 +21,15 @@ export interface OrderEmailData {
     country?: string;
   };
   trackingNumber?: string;
+  paymentMethod?: string;
 }
 
 /**
  * Template 1: Order confirmation — "Your MENANCE order is confirmed."
  */
 export function getOrderConfirmationTemplate(data: OrderEmailData) {
+  const isCod = (data.paymentMethod || '').toLowerCase().includes('cod') || (data.paymentMethod || '').toLowerCase().includes('cash');
+
   const itemsList = data.items
     .map(
       (item) =>
@@ -37,11 +40,14 @@ export function getOrderConfirmationTemplate(data: OrderEmailData) {
     .join('\n');
 
   return {
-    subject: `MENANCE // Order Confirmed [${data.orderId}]`,
+    subject: isCod
+      ? `MENANCE // Cash on Delivery Confirmed [${data.orderId}]`
+      : `MENANCE // Order Confirmed [${data.orderId}]`,
     text: `
 MENANCE® — NOT FOR EVERYONE.
 ----------------------------------------
 ORDER CONFIRMED: #${data.orderId}
+PAYMENT MODE: ${isCod ? 'CASH ON DELIVERY (COD)' : 'ONLINE PREPAID'}
 CUSTOMER: ${data.customerName}
 
 YOUR SILHOUETTES:
@@ -49,13 +55,20 @@ ${itemsList}
 
 SUBTOTAL: ₹${data.subtotalInr.toLocaleString('en-IN')}
 SHIPPING: ${data.shippingInr === 0 ? 'FREE EXPRESS' : `₹${data.shippingInr}`}
-TOTAL CHARGED: ₹${data.totalInr.toLocaleString('en-IN')}
+TOTAL ${isCod ? 'DUE AT DOORSTEP' : 'PAID'}: ₹${data.totalInr.toLocaleString('en-IN')}
 
 DISPATCH ADDRESS:
 ${data.customerName}
 ${data.shippingAddress.line1} ${data.shippingAddress.line2 || ''}
 ${data.shippingAddress.city}, ${data.shippingAddress.state} - ${data.shippingAddress.pincode}
 ${data.shippingAddress.country || 'India'}
+
+${
+  isCod
+    ? `PAYMENT ADVISORY:
+Please keep ₹${data.totalInr.toLocaleString('en-IN')} exact cash ready for the courier partner at delivery.`
+    : ''
+}
 
 TIMELINE:
 Every order is inspected and dispatched in discrete brutalist packaging within 24 hours.
@@ -87,8 +100,8 @@ wearmenance.in
                 </span>
               </td>
               <td style="text-align: right; vertical-align: top;">
-                <span style="display: inline-block; background-color: #C6FF00; color: #0A0A0A; font-family: 'Courier New', Courier, monospace; font-size: 9px; font-weight: bold; letter-spacing: 1.5px; padding: 4px 8px; text-transform: uppercase;">
-                  PAID &amp; LOCKED
+                <span style="display: inline-block; background-color: ${isCod ? '#F59E0B' : '#C6FF00'}; color: #0A0A0A; font-family: 'Courier New', Courier, monospace; font-size: 9px; font-weight: bold; letter-spacing: 1.5px; padding: 4px 8px; text-transform: uppercase;">
+                  ${isCod ? 'CASH ON DELIVERY' : 'PAID &amp; LOCKED'}
                 </span>
               </td>
             </tr>
@@ -103,10 +116,29 @@ wearmenance.in
             ORDER CONFIRMED: #${data.orderId}
           </h2>
           <p style="margin: 0; color: #A0A0A0; font-size: 13px; line-height: 1.6;">
-            Peace <strong style="color: #F5F1E8;">${data.customerName}</strong>, your order is secured. Our fulfillment unit has initiated garment preparation and quality inspection.
+            Peace <strong style="color: #F5F1E8;">${data.customerName}</strong>, your ${isCod ? 'Cash on Delivery' : ''} order is locked in. Our fulfillment unit has initiated garment allocation and quality inspection.
           </p>
         </td>
       </tr>
+
+      <!-- COD Notice Banner if applicable -->
+      ${
+        isCod
+          ? `
+      <tr>
+        <td style="padding: 0 32px 16px 32px;">
+          <div style="background-color: #1c1508; border-left: 3px solid #F59E0B; border-top: 1px solid #3d2c0e; border-right: 1px solid #3d2c0e; border-bottom: 1px solid #3d2c0e; padding: 14px 18px;">
+            <div style="font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #F59E0B; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;">
+              CASH ON DELIVERY SETTLEMENT
+            </div>
+            <p style="margin: 0; font-size: 12px; color: #F5F1E8; line-height: 1.5;">
+              Please keep exact cash of <strong style="color: #F59E0B; font-size: 13px;">₹${data.totalInr.toLocaleString('en-IN')}</strong> ready for the courier partner when your parcel arrives at your doorstep.
+            </p>
+          </div>
+        </td>
+      </tr>`
+          : ''
+      }
 
       <!-- Order Items Table -->
       <tr>
@@ -154,9 +186,9 @@ wearmenance.in
               </tr>
               <tr style="border-top: 1px dashed #333333; background-color: #0E0E0E;">
                 <td colspan="2" style="padding: 14px 16px; font-size: 13px; font-family: 'Courier New', Courier, monospace; font-weight: bold; color: #F5F1E8; text-transform: uppercase;">
-                  TOTAL PAID
+                  ${isCod ? 'TOTAL DUE AT DELIVERY' : 'TOTAL PAID'}
                 </td>
-                <td style="padding: 14px 16px; text-align: right; font-size: 18px; font-family: 'Courier New', Courier, monospace; font-weight: 900; color: #C6FF00;">
+                <td style="padding: 14px 16px; text-align: right; font-size: 18px; font-family: 'Courier New', Courier, monospace; font-weight: 900; color: ${isCod ? '#F59E0B' : '#C6FF00'};">
                   ₹${data.totalInr.toLocaleString('en-IN')}
                 </td>
               </tr>

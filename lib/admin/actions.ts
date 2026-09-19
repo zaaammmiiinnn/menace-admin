@@ -341,6 +341,46 @@ async function syncProductToStorefront(action: 'upsert' | 'delete', product: any
   }
 }
 
+import { getCloudflareContext } from '@opennextjs/cloudflare';
+
+async function persistImagesToKV(images: string[], productId: string): Promise<string[]> {
+  const finalUrls: string[] = [];
+  let kv: any = null;
+  try {
+    const ctx = getCloudflareContext();
+    kv = (ctx.env as any)?.MENACE_KV;
+  } catch {}
+
+  for (let i = 0; i < images.length; i++) {
+    const rawUrl = images[i];
+    if (rawUrl && typeof rawUrl === 'string' && rawUrl.startsWith('data:image/')) {
+      const match = rawUrl.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/);
+      if (match && kv) {
+        try {
+          const mime = match[1];
+          const base64Data = match[2];
+          const binaryString = atob(base64Data);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let j = 0; j < binaryString.length; j++) {
+            bytes[j] = binaryString.charCodeAt(j);
+          }
+          const imgKey = `img_${productId}_${i}`;
+          await Promise.all([
+            kv.put(`img:${imgKey}`, bytes.buffer),
+            kv.put(`mime:${imgKey}`, mime),
+          ]);
+          finalUrls.push(`/api/images/${imgKey}`);
+          continue;
+        } catch (e) {
+          console.error('[persistImagesToKV] Failed to store image to KV:', e);
+        }
+      }
+    }
+    finalUrls.push(rawUrl);
+  }
+  return finalUrls;
+}
+
 export async function createProductAction(formData: any) {
   try {
     await requireAdmin();
@@ -354,6 +394,10 @@ export async function createProductAction(formData: any) {
 
     const id = `prod_${Date.now()}`;
     const now = Date.now();
+
+    // Persist heavy image assets into Cloudflare KV for ultra-fast serving
+    const processedImages = await persistImagesToKV(parsed.images || [], id);
+    parsed.images = processedImages;
 
     try {
       const db = getDb();
@@ -472,6 +516,10 @@ export async function updateProductAction(id: string, formData: any) {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)+/g, '') || `product-${Date.now()}`;
     parsed.slug = normalizedSlug;
+
+    // Persist heavy image assets into Cloudflare KV for ultra-fast serving
+    const processedImages = await persistImagesToKV(parsed.images || [], id);
+    parsed.images = processedImages;
 
     try {
       const db = getDb();

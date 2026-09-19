@@ -53,21 +53,53 @@ export function ImageUploader({ images = [], onChange, maxImages = 8 }: ImageUpl
           continue;
         }
 
-        // Read directly as Base64 Data URL for instant resilient preview and persistence
-        const dataUrl = await new Promise<string>((resolve, reject) => {
+        // Compress and optimize image using client-side Canvas
+        const optimizedDataUrl = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              const maxDimension = 1400;
+              let { width, height } = img;
+
+              if (width > maxDimension || height > maxDimension) {
+                if (width > height) {
+                  height = Math.round((height * maxDimension) / width);
+                  width = maxDimension;
+                } else {
+                  width = Math.round((width * maxDimension) / height);
+                  height = maxDimension;
+                }
+              }
+
+              const canvas = document.createElement('canvas');
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              if (!ctx) {
+                resolve(reader.result as string);
+                return;
+              }
+
+              ctx.drawImage(img, 0, 0, width, height);
+              // Use WebP/JPEG for ultra-crisp ~80KB lightweight storage
+              const compressed = canvas.toDataURL('image/jpeg', 0.85);
+              resolve(compressed);
+            };
+            img.onerror = () => resolve(reader.result as string);
+            img.src = e.target?.result as string;
+          };
           reader.onerror = reject;
           reader.readAsDataURL(file);
         });
 
-        newUrls.push(dataUrl);
+        newUrls.push(optimizedDataUrl);
       }
 
       if (newUrls.length > 0) {
         const updated = [...images, ...newUrls].slice(0, maxImages);
         onChange(updated);
-        toast.success(`Successfully added ${newUrls.length} image(s).`, { id: toastId });
+        toast.success(`Successfully optimized and added ${newUrls.length} image(s).`, { id: toastId });
       } else {
         toast.dismiss(toastId);
       }

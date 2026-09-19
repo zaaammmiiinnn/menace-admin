@@ -345,6 +345,12 @@ export async function createProductAction(formData: any) {
   try {
     await requireAdmin();
     const parsed = productFormSchema.parse(formData);
+    const normalizedSlug = (parsed.slug || parsed.name)
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '') || `product-${Date.now()}`;
+    parsed.slug = normalizedSlug;
 
     const id = `prod_${Date.now()}`;
     const now = Date.now();
@@ -460,6 +466,12 @@ export async function updateProductAction(id: string, formData: any) {
   try {
     await requireAdmin();
     const parsed = productFormSchema.parse(formData);
+    const normalizedSlug = (parsed.slug || parsed.name)
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '') || `product-${Date.now()}`;
+    parsed.slug = normalizedSlug;
 
     try {
       const db = getDb();

@@ -108,8 +108,19 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
   const onSubmit = async (values: ProductFormValues) => {
     setIsSaving(true);
     try {
+      const sanitizedSlug = (values.slug || values.name)
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '') || `product-${Date.now()}`;
+      
+      const payload = {
+        ...values,
+        slug: sanitizedSlug,
+      };
+
       if (isNew) {
-        const res: any = await createProductAction(values);
+        const res: any = await createProductAction(payload);
         if (res && res.error) {
           toast.error(res.error);
           return;
@@ -121,7 +132,7 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
           router.push('/products');
         }
       } else {
-        const res: any = await updateProductAction(initialProduct.id, values);
+        const res: any = await updateProductAction(initialProduct.id, payload);
         if (res && res.error) {
           toast.error(res.error);
           return;
@@ -133,6 +144,19 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
       toast.error(err?.message || 'Failed to save product');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    form.setValue('name', newName);
+    if (isNew) {
+      const autoSlug = newName
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '');
+      form.setValue('slug', autoSlug);
     }
   };
 
@@ -192,6 +216,7 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
                 <label className="text-xs font-medium text-[#F5F1E8]">Product Name</label>
                 <input
                   {...form.register('name')}
+                  onChange={handleNameChange}
                   placeholder="The Acid Menance Tee"
                   className="w-full h-9 px-3 bg-[#181818] border border-[#262626] focus:border-[#C6FF00] rounded-lg text-xs text-[#F5F1E8] outline-none"
                 />

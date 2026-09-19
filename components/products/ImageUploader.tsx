@@ -36,7 +36,7 @@ export function ImageUploader({ images = [], onChange, maxImages = 8 }: ImageUpl
     }
 
     setIsUploading(true);
-    const toastId = toast.loading('Uploading and processing images...');
+    const toastId = toast.loading('Uploading and optimizing images...');
 
     try {
       const newUrls: string[] = [];
@@ -82,7 +82,6 @@ export function ImageUploader({ images = [], onChange, maxImages = 8 }: ImageUpl
               }
 
               ctx.drawImage(img, 0, 0, width, height);
-              // Use WebP/JPEG for ultra-crisp ~80KB lightweight storage
               const compressed = canvas.toDataURL('image/jpeg', 0.85);
               resolve(compressed);
             };
@@ -93,13 +92,32 @@ export function ImageUploader({ images = [], onChange, maxImages = 8 }: ImageUpl
           reader.readAsDataURL(file);
         });
 
+        // Instant upload to Cloudflare KV via /api/upload
+        try {
+          const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dataUrl: optimizedDataUrl }),
+          });
+
+          if (uploadRes.ok) {
+            const data = await uploadRes.json();
+            if (data?.url) {
+              newUrls.push(data.url);
+              continue;
+            }
+          }
+        } catch (uploadErr) {
+          console.warn('[ImageUploader] Direct KV upload failed, using optimized DataURL:', uploadErr);
+        }
+
         newUrls.push(optimizedDataUrl);
       }
 
       if (newUrls.length > 0) {
         const updated = [...images, ...newUrls].slice(0, maxImages);
         onChange(updated);
-        toast.success(`Successfully optimized and added ${newUrls.length} image(s).`, { id: toastId });
+        toast.success(`Successfully uploaded and saved ${newUrls.length} image(s).`, { id: toastId });
       } else {
         toast.dismiss(toastId);
       }
@@ -199,7 +217,7 @@ export function ImageUploader({ images = [], onChange, maxImages = 8 }: ImageUpl
 
           <div>
             <p className="text-xs font-bold text-[#F5F1E8] font-mono">
-              {isUploading ? 'PROCESSING IMAGES...' : 'CLICK TO BROWSE OR DRAG & DROP'}
+              {isUploading ? 'PROCESSING & STORING TO KV...' : 'CLICK TO BROWSE OR DRAG & DROP'}
             </p>
             <p className="text-[10px] text-[#8A8A8A] font-mono mt-0.5">
               Supports PNG, JPG, WebP up to 10MB (max {maxImages} images)

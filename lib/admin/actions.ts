@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { requireAdmin, requireStaff, getAdminUser } from '@/lib/auth/roles';
-import { getDb, getLocalStore } from '@/lib/db';
+import { getDb, getLocalStore, getKVDatabase } from '@/lib/db';
 import {
   products,
   productVariants,
@@ -341,15 +341,9 @@ async function syncProductToStorefront(action: 'upsert' | 'delete', product: any
   }
 }
 
-import { getCloudflareContext } from '@opennextjs/cloudflare';
-
 async function persistImagesToKV(images: string[], productId: string): Promise<string[]> {
   const finalUrls: string[] = [];
-  let kv: any = null;
-  try {
-    const ctx = getCloudflareContext();
-    kv = (ctx.env as any)?.MENACE_KV;
-  } catch {}
+  const kv = getKVDatabase();
 
   for (let i = 0; i < images.length; i++) {
     const rawUrl = images[i];

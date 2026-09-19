@@ -34,7 +34,7 @@ export function OrdersView({ initialOrders }: OrdersViewProps) {
       setOrders((prev) =>
         prev.map((o) => (o.id === orderId ? { ...o, status: 'paid' } : o))
       );
-      toast.success(`Order ${orderId} marked as PACKED.`);
+      toast.success(`Order ${orderId} marked as PACKED. Email dispatched to customer.`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to update order');
     }
@@ -47,7 +47,7 @@ export function OrdersView({ initialOrders }: OrdersViewProps) {
       setOrders((prev) =>
         prev.map((o) => (o.id === orderId ? { ...o, status: 'shipped', tracking_number: sampleTracking } : o))
       );
-      toast.success(`Order ${orderId} marked as SHIPPED (${sampleTracking}).`);
+      toast.success(`Order ${orderId} marked as SHIPPED. Tracking email dispatched.`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to update order');
     }

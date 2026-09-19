@@ -135,7 +135,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
           };
         }
         productSales[product.id].units += item.quantity;
-        productSales[product.id].revenue += item.priceAtPurchase * item.quantity;
+        productSales[product.id].revenue += (item.priceAtPurchase || item.priceInr || 0) * item.quantity;
       }
     });
 
@@ -265,16 +265,23 @@ export async function getOrders(statusFilter?: string) {
             order_id: item.orderId,
             variant_id: item.variantId,
             quantity: item.quantity,
-            price_at_purchase: item.priceAtPurchase,
+            price_at_purchase: item.priceAtPurchase || item.priceInr,
             variant: variant ? {
               ...variant,
               product_id: variant.productId,
               price_override: variant.priceOverride,
               image_url: variant.imageUrl,
             } : undefined,
-            productName: product?.name || 'Menance Essential Tee',
+            productName: item.productName || product?.name || 'Menance Essential Tee',
+            customArtworkUrl: item.customArtworkUrl || null,
+            customPlacement: item.customPlacement || null,
+            customScale: item.customScale || null,
+            customQuoteText: item.customQuoteText || null,
+            edition: item.edition || (item.customArtworkUrl ? 'custom' : 'archive'),
           };
         });
+
+      const hasCustomPrint = orderItemsList.some((i: any) => i.edition === 'custom' || !!i.customArtworkUrl);
 
       return {
         ...o,
@@ -292,6 +299,7 @@ export async function getOrders(statusFilter?: string) {
         customerEmail: customer.email,
         itemsCount: orderItemsList.reduce((acc, curr) => acc + (curr.quantity || 1), 0),
         items: orderItemsList,
+        hasCustomPrint,
       };
     });
   } catch (err) {
@@ -317,14 +325,25 @@ function getOrdersFallback(statusFilter?: string) {
     const orderItemsList = items.filter((item: any) => item.order_id === o.id).map((item: any) => {
       const variant = variants.find((v: any) => v.id === item.variant_id);
       const product = variant ? productsData.find((p: any) => p.id === variant.product_id) : null;
-      return { ...item, variant, productName: product?.name || 'Menance Essential Tee' };
+      return {
+        ...item,
+        variant,
+        productName: item.product_name || product?.name || 'Menance Essential Tee',
+        customArtworkUrl: item.custom_artwork_url || item.customArtworkUrl || null,
+        customPlacement: item.custom_placement || item.customPlacement || null,
+        customScale: item.custom_scale || item.customScale || null,
+        customQuoteText: item.custom_quote_text || item.customQuoteText || null,
+        edition: item.edition || (item.custom_artwork_url || item.customArtworkUrl ? 'custom' : 'archive'),
+      };
     });
+    const hasCustomPrint = orderItemsList.some((i: any) => i.edition === 'custom' || !!i.customArtworkUrl);
     return {
       ...o,
       customerName: customer.name,
       customerEmail: customer.email,
       itemsCount: orderItemsList.reduce((acc: number, curr: any) => acc + (curr.quantity || 1), 0),
       items: orderItemsList,
+      hasCustomPrint,
     };
   });
 }
@@ -357,7 +376,7 @@ export async function getOrderById(orderId: string) {
           order_id: item.orderId,
           variant_id: item.variantId,
           quantity: item.quantity,
-          price_at_purchase: item.priceAtPurchase,
+          price_at_purchase: item.priceAtPurchase || item.priceInr,
           variant: variant ? {
             ...variant,
             product_id: variant.productId,
@@ -372,6 +391,12 @@ export async function getOrderById(orderId: string) {
             created_at: product.createdAt,
             updated_at: product.updatedAt,
           } : undefined,
+          productName: item.productName || product?.name || 'Menance Silhouette',
+          customArtworkUrl: item.customArtworkUrl || null,
+          customPlacement: item.customPlacement || null,
+          customScale: item.customScale || null,
+          customQuoteText: item.customQuoteText || null,
+          edition: item.edition || (item.customArtworkUrl ? 'custom' : 'archive'),
         };
       });
 
@@ -410,7 +435,17 @@ function getOrderByIdFallback(orderId: string) {
   const orderItemsList = items.filter((item: any) => item.order_id === order.id).map((item: any) => {
     const variant = variants.find((v: any) => v.id === item.variant_id);
     const product = variant ? productsData.find((p: any) => p.id === variant.product_id) : null;
-    return { ...item, variant, product };
+    return {
+      ...item,
+      variant,
+      product,
+      productName: item.product_name || product?.name || 'Menance Essential Tee',
+      customArtworkUrl: item.custom_artwork_url || item.customArtworkUrl || null,
+      customPlacement: item.custom_placement || item.customPlacement || null,
+      customScale: item.custom_scale || item.customScale || null,
+      customQuoteText: item.custom_quote_text || item.customQuoteText || null,
+      edition: item.edition || (item.custom_artwork_url || item.customArtworkUrl ? 'custom' : 'archive'),
+    };
   });
   return { ...order, customer, items: orderItemsList };
 }

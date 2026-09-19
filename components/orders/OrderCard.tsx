@@ -59,11 +59,29 @@ export function OrderCard({ order, onPack, onShip }: OrderCardProps) {
     <div className="p-4 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="font-mono text-xs font-bold text-[#F5F1E8] tracking-wider">
               {order.id}
             </span>
             {getStatusBadge(order.status)}
+            {(() => {
+              const notes = (order.notes || '').toUpperCase();
+              const isCod = notes.includes('CASH ON DELIVERY') || notes.includes('COD') || order.paymentMethod === 'Cash on Delivery (COD)';
+              return isCod ? (
+                <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                  COD
+                </span>
+              ) : (
+                <span className="text-[10px] font-mono font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                  ONLINE
+                </span>
+              );
+            })()}
+            {order.hasCustomPrint && (
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#C6FF00]/15 text-[#C6FF00] border border-[#C6FF00]/30 font-semibold">
+                ⚡ CUSTOM
+              </span>
+            )}
           </div>
           <div className="text-xs text-[#8A8A8A] mt-0.5 truncate">
             {order.customerName} • {order.customerEmail}

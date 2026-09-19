@@ -378,6 +378,185 @@ wearmenance.in
   };
 }
 
+/**
+ * Template 3: Order packed notification — "Your order is packed & QA inspected."
+ */
+export function getOrderPackedTemplate(data: OrderEmailData) {
+  const itemsList = data.items
+    .map(
+      (item) =>
+        `• ${item.name} (${item.color}, Size ${item.size}) x ${item.quantity}`
+    )
+    .join('\n');
+
+  return {
+    subject: `MENANCE // Order Packed & QA Approved [${data.orderId}]`,
+    text: `
+MENANCE® — NOT FOR EVERYONE.
+----------------------------------------
+ORDER PACKED & QUALITY QA APPROVED: #${data.orderId}
+CUSTOMER: ${data.customerName}
+
+SILHOUETTES PACKED & SEALED:
+${itemsList}
+
+STATUS:
+Your garments have passed workshop quality inspection, custom print verification, and have been sealed in discrete archival packaging.
+
+DISPATCH DESTINATION:
+${data.customerName}
+${data.shippingAddress.line1} ${data.shippingAddress.line2 || ''}
+${data.shippingAddress.city}, ${data.shippingAddress.state} - ${data.shippingAddress.pincode}
+${data.shippingAddress.country || 'India'}
+
+NEXT STAGE:
+Courier handover and live airway bill tracking dispatch within 12–24 hours.
+
+MIND YOUR BUSINESS. WEAR THIS.
+wearmenance.in
+`,
+    html: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MENANCE // Order Packed</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050505; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #F5F1E8;">
+  <div style="background-color: #050505; padding: 32px 16px; min-height: 100%;">
+    <table role="presentation" style="max-width: 600px; width: 100%; margin: 0 auto; background-color: #0D0D0D; border: 1px solid #1C1C1C; border-collapse: separate; border-spacing: 0;">
+      <!-- Header Banner -->
+      <tr>
+        <td style="padding: 32px 32px 24px 32px; border-bottom: 2px solid #C6FF00; background: linear-gradient(180deg, #141414 0%, #0D0D0D 100%);">
+          <table role="presentation" style="width: 100%;">
+            <tr>
+              <td>
+                <span style="font-size: 26px; font-weight: 900; letter-spacing: 3px; color: #F5F1E8; text-transform: uppercase; font-family: 'Courier New', Courier, monospace; display: block;">MENANCE®</span>
+                <span style="display: inline-block; margin-top: 6px; font-size: 10px; font-family: 'Courier New', Courier, monospace; letter-spacing: 2px; color: #C6FF00; text-transform: uppercase; font-weight: bold;">
+                  WORKSHOP // QUALITY INSPECTION UNIT
+                </span>
+              </td>
+              <td style="text-align: right; vertical-align: top;">
+                <span style="display: inline-block; background-color: #10B981; color: #0A0A0A; font-family: 'Courier New', Courier, monospace; font-size: 9px; font-weight: bold; letter-spacing: 1.5px; padding: 4px 8px; text-transform: uppercase;">
+                  PACKED &amp; SEALED
+                </span>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Headline -->
+      <tr>
+        <td style="padding: 32px 32px 16px 32px;">
+          <h2 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #F5F1E8; font-family: 'Courier New', Courier, monospace;">
+            YOUR ORDER HAS BEEN PACKED
+          </h2>
+          <p style="margin: 0; color: #A0A0A0; font-size: 13px; line-height: 1.6;">
+            Peace <strong style="color: #F5F1E8;">${data.customerName}</strong>, order <strong style="color: #C6FF00;">#${data.orderId}</strong> has successfully completed workshop preparation and quality assurance. Your garments are inspected, folded, and sealed in archival stealth packaging.
+          </p>
+        </td>
+      </tr>
+
+      <!-- Quality Assurance Certificate Card -->
+      <tr>
+        <td style="padding: 0 32px 24px 32px;">
+          <div style="background-color: #111111; border: 1px solid #222222; border-left: 3px solid #10B981; padding: 18px 20px;">
+            <div style="font-size: 10px; font-family: 'Courier New', Courier, monospace; color: #10B981; letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; margin-bottom: 6px;">
+              QA STATUS: 100% VERIFIED &amp; APPROVED
+            </div>
+            <div style="font-size: 12px; color: #CCCCCC; line-height: 1.5;">
+              • Garment Fabric &amp; Seam Integrity: <span style="color: #10B981; font-weight: bold;">PASSED</span><br>
+              • Screen/DTG Print &amp; Graphics Alignment: <span style="color: #10B981; font-weight: bold;">PASSED</span><br>
+              • Archival Stealth Packaging Sealed: <span style="color: #10B981; font-weight: bold;">PASSED</span>
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Items in Parcel -->
+      <tr>
+        <td style="padding: 0 32px 24px 32px;">
+          <table role="presentation" style="width: 100%; border: 1px solid #1C1C1C; background-color: #111111; border-collapse: collapse;">
+            <thead>
+              <tr style="border-bottom: 1px solid #222222; background-color: #161616;">
+                <th style="padding: 12px 16px; text-align: left; font-size: 10px; font-family: 'Courier New', Courier, monospace; color: #8A8A8A; letter-spacing: 1.5px; text-transform: uppercase;">SEALED SILHOUETTES</th>
+                <th style="padding: 12px 16px; text-align: right; font-size: 10px; font-family: 'Courier New', Courier, monospace; color: #8A8A8A; letter-spacing: 1.5px; text-transform: uppercase;">QTY</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.items
+                .map(
+                  (item) => `
+              <tr style="border-bottom: 1px solid #1A1A1A;">
+                <td style="padding: 12px 16px; vertical-align: middle;">
+                  <div style="font-size: 13px; font-weight: 700; color: #F5F1E8; text-transform: uppercase;">${item.name}</div>
+                  <div style="font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #8A8A8A; margin-top: 3px;">
+                    COLOR: ${item.color} // SIZE: <span style="color: #C6FF00; font-weight: bold;">${item.size}</span>
+                  </div>
+                </td>
+                <td style="padding: 12px 16px; text-align: right; vertical-align: middle; font-family: 'Courier New', Courier, monospace; font-size: 12px; color: #F5F1E8; font-weight: bold;">
+                  x${item.quantity}
+                </td>
+              </tr>`
+                )
+                .join('')}
+            </tbody>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Shipping Destination -->
+      <tr>
+        <td style="padding: 0 32px 24px 32px;">
+          <div style="background-color: #111111; border-left: 2px solid #333333; border-top: 1px solid #1C1C1C; border-right: 1px solid #1C1C1C; border-bottom: 1px solid #1C1C1C; padding: 18px 20px;">
+            <div style="font-size: 10px; font-family: 'Courier New', Courier, monospace; color: #8A8A8A; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;">
+              STAGED FOR DISPATCH TO
+            </div>
+            <div style="font-size: 13px; color: #F5F1E8; font-weight: 700; margin-bottom: 4px;">${data.customerName}</div>
+            <div style="font-size: 12px; color: #A0A0A0; line-height: 1.5;">
+              ${data.shippingAddress.line1}${data.shippingAddress.line2 ? `, ${data.shippingAddress.line2}` : ''}<br>
+              ${data.shippingAddress.city}, ${data.shippingAddress.state} - ${data.shippingAddress.pincode}<br>
+              ${data.shippingAddress.country || 'India'}
+            </div>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Next Steps Notice -->
+      <tr>
+        <td style="padding: 0 32px 32px 32px;">
+          <div style="background-color: #141414; border: 1px solid #222222; padding: 16px 20px;">
+            <div style="font-size: 10px; font-family: 'Courier New', Courier, monospace; color: #C6FF00; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;">
+              NEXT STAGE: COURIER HANDOVER
+            </div>
+            <p style="margin: 0; font-size: 12px; color: #CCCCCC; line-height: 1.5;">
+              Your parcel is currently in the dispatch staging queue. You will receive an immediate email containing your live airway bill tracking link once the express carrier scans the package.
+            </p>
+          </div>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td style="padding: 24px 32px; border-top: 1px solid #1C1C1C; background-color: #0A0A0A; text-align: center;">
+          <p style="margin: 0 0 8px 0; font-size: 11px; font-family: 'Courier New', Courier, monospace; color: #8A8A8A; letter-spacing: 1px;">
+            MENANCE® // NOT FOR EVERYONE.
+          </p>
+          <p style="margin: 0; font-size: 10px; color: #555555; line-height: 1.6;">
+            Questions regarding this order? Reply directly to this email or reach us at <a href="mailto:support@wearmenance.in" style="color: #C6FF00; text-decoration: none;">support@wearmenance.in</a>.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
+`,
+  };
+}
+
 export interface SendOrderEmailResult {
   success: boolean;
   messageId?: string;
@@ -385,7 +564,7 @@ export interface SendOrderEmailResult {
 }
 
 /**
- * Sends order confirmation / shipping notifications via Resend HTTP REST API.
+ * Sends order confirmation / packed / shipping notifications via Resend HTTP REST API.
  * Compatible with Node.js, Next.js, and Cloudflare Workers / Edge runtimes without TCP socket dependencies.
  */
 export async function sendOrderEmail({
@@ -395,7 +574,7 @@ export async function sendOrderEmail({
   trackingNumber,
 }: {
   to: string;
-  type: 'confirmation' | 'shipping';
+  type: 'confirmation' | 'packed' | 'shipping';
   data: OrderEmailData;
   trackingNumber?: string;
 }): Promise<SendOrderEmailResult> {
@@ -408,6 +587,8 @@ export async function sendOrderEmail({
   const template =
     type === 'confirmation'
       ? getOrderConfirmationTemplate(data)
+      : type === 'packed'
+      ? getOrderPackedTemplate(data)
       : getShippingNotificationTemplate(data, trackingNumber || 'TRK-MNC-EXPRESS');
 
   let cfEnv: any = {};

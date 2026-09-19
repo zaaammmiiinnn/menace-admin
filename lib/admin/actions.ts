@@ -94,6 +94,59 @@ export async function updateOrderStatusAction(orderId: string, status: 'pending'
       details: `Transitioned order ${orderId} from ${prevStatus} to ${status}${trackingNumber ? ` (Tracking: ${trackingNumber})` : ''}`,
     });
 
+    // When order is marked as packed, dispatch packed QA approval confirmation email to customer
+    if (status === 'paid') {
+      try {
+        const orderObj = existing[0];
+        let customerEmail = '';
+        let customerName = 'Customer';
+
+        if (orderObj.customerId) {
+          const cust = await db.select().from(customers).where(eq(customers.id, orderObj.customerId));
+          if (cust.length) {
+            customerEmail = cust[0].email;
+            customerName = cust[0].name || customerName;
+          }
+        }
+
+        const itemsRows = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+        const formattedItems = itemsRows.map((it: any) => ({
+          name: it.productName || 'MENANCE Silhouette',
+          size: it.size || 'M',
+          color: it.color || 'Black',
+          quantity: Number(it.quantity) || 1,
+          price: Number(it.priceAtPurchase || it.priceInr || 0),
+        }));
+
+        let shippingAddress = { line1: '', city: '', state: '', pincode: '', country: 'India' };
+        try {
+          if (typeof orderObj.shippingAddress === 'string') {
+            shippingAddress = JSON.parse(orderObj.shippingAddress);
+          }
+        } catch {}
+
+        if (customerEmail) {
+          await sendOrderEmail({
+            to: customerEmail,
+            type: 'packed',
+            data: {
+              orderId,
+              customerName,
+              customerEmail,
+              items: formattedItems,
+              subtotalInr: Number(orderObj.totalInr || 0),
+              shippingInr: 0,
+              totalInr: Number(orderObj.totalInr || 0),
+              shippingAddress,
+            },
+          });
+          console.log(`[Admin Action] Dispatched packed notification email to ${customerEmail} for order ${orderId}`);
+        }
+      } catch (emailErr) {
+        console.error('[Admin Action] Failed to dispatch packed notification email:', emailErr);
+      }
+    }
+
     // When order is marked as shipped, dispatch shipping confirmation email to customer
     if (status === 'shipped') {
       try {
@@ -111,11 +164,11 @@ export async function updateOrderStatusAction(orderId: string, status: 'pending'
 
         const itemsRows = await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
         const formattedItems = itemsRows.map((it: any) => ({
-          name: 'MENANCE Silhouette',
-          size: 'M',
-          color: 'Black',
+          name: it.productName || 'MENANCE Silhouette',
+          size: it.size || 'M',
+          color: it.color || 'Black',
           quantity: Number(it.quantity) || 1,
-          price: Number(it.priceAtPurchase || 0),
+          price: Number(it.priceAtPurchase || it.priceInr || 0),
         }));
 
         let shippingAddress = { line1: '', city: '', state: '', pincode: '', country: 'India' };

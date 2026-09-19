@@ -236,13 +236,13 @@ export class LocalD1Fallback {
     ];
 
     this.tables.order_items = [
-      { id: 'item_001', order_id: 'MNC-8821', variant_id: 'var_001_m_blk', quantity: 1, price_at_purchase: 1299 },
-      { id: 'item_002', order_id: 'MNC-8821', variant_id: 'var_002_m_acid', quantity: 1, price_at_purchase: 1499 },
-      { id: 'item_003', order_id: 'MNC-8822', variant_id: 'var_003_m_mid', quantity: 2, price_at_purchase: 1399 },
-      { id: 'item_004', order_id: 'MNC-8823', variant_id: 'var_006_m_waf', quantity: 1, price_at_purchase: 1599 },
-      { id: 'item_005', order_id: 'MNC-8824', variant_id: 'var_004_m_acd', quantity: 1, price_at_purchase: 1499 },
-      { id: 'item_006', order_id: 'MNC-8824', variant_id: 'var_005_m_raw', quantity: 2, price_at_purchase: 1349 },
-      { id: 'item_007', order_id: 'MNC-8825', variant_id: 'var_002_m_wblk', quantity: 1, price_at_purchase: 1499 },
+      { id: 'item_001', order_id: 'MNC-8821', variant_id: 'var_001_m_blk', product_name: 'The Quiet Menance Tee', size: 'M', color: 'Black', quantity: 1, price_at_purchase: 1299, edition: 'archive' },
+      { id: 'item_002', order_id: 'MNC-8821', variant_id: 'var_002_m_acid', product_name: 'The Loud Menance Tee', size: 'M', color: 'Acid Green', quantity: 1, price_at_purchase: 1499, edition: 'archive' },
+      { id: 'item_003', order_id: 'MNC-8822', variant_id: 'var_003_m_mid', product_name: 'The Midnight Menance Tee', size: 'M', color: 'Midnight Black', quantity: 2, price_at_purchase: 1399, edition: 'plain' },
+      { id: 'item_004', order_id: 'MNC-8823', variant_id: 'var_006_m_waf', product_name: 'The Oversized Heavy Waffle Tee', size: 'M', color: 'Base Black', quantity: 1, price_at_purchase: 1599, edition: 'archive' },
+      { id: 'item_005', order_id: 'MNC-8824', variant_id: 'var_004_m_acd', product_name: 'The Acid Menance Tee (Custom Print)', size: 'M', color: 'Acid Green', quantity: 1, price_at_purchase: 1499, edition: 'custom', custom_placement: 'back', custom_scale: 'large', custom_quote_text: 'NOT FOR EVERYONE.', custom_artwork_url: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360"><text x="400" y="210" font-size="94" font-family="Arial Black" font-weight="900" letter-spacing="5" fill="%23F0EBE1" text-anchor="middle">NOT FOR EVERYONE.</text></svg>' },
+      { id: 'item_006', order_id: 'MNC-8824', variant_id: 'var_005_m_raw', product_name: 'The Raw Edge Boxy Tee', size: 'M', color: 'Cement', quantity: 2, price_at_purchase: 1349, edition: 'archive' },
+      { id: 'item_007', order_id: 'MNC-8825', variant_id: 'var_002_m_wblk', product_name: 'The Loud Menance Tee', size: 'M', color: 'Washed Black', quantity: 1, price_at_purchase: 1499, edition: 'archive' },
     ];
 
     this.tables.discount_codes = [

@@ -19,13 +19,20 @@ export function OrderTable({ orders, onPack, onShip }: OrderTableProps) {
       accessorKey: 'id',
       header: 'ORDER',
       cell: ({ row }) => (
-        <Link
-          href={`/orders/${row.original.id}`}
-          className="font-mono font-bold text-[#F5F1E8] hover:text-[#C6FF00] transition-colors flex items-center gap-1.5"
-        >
-          <span>{row.original.id}</span>
-          <ExternalLink className="w-3 h-3 opacity-40 hover:opacity-100" />
-        </Link>
+        <div className="flex flex-col gap-1 items-start">
+          <Link
+            href={`/orders/${row.original.id}`}
+            className="font-mono font-bold text-[#F5F1E8] hover:text-[#C6FF00] transition-colors flex items-center gap-1.5"
+          >
+            <span>{row.original.id}</span>
+            <ExternalLink className="w-3 h-3 opacity-40 hover:opacity-100" />
+          </Link>
+          {row.original.hasCustomPrint && (
+            <span className="inline-flex items-center gap-1 text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#C6FF00]/15 text-[#C6FF00] border border-[#C6FF00]/30 font-semibold tracking-wider">
+              ⚡ CUSTOM PRINT
+            </span>
+          )}
+        </div>
       ),
     },
     {
@@ -69,6 +76,23 @@ export function OrderTable({ orders, onPack, onShip }: OrderTableProps) {
           ₹{row.original.total_inr.toLocaleString()}
         </span>
       ),
+    },
+    {
+      id: 'paymentMethod',
+      header: 'PAYMENT',
+      cell: ({ row }) => {
+        const notes = (row.original.notes || '').toUpperCase();
+        const isCod = notes.includes('CASH ON DELIVERY') || notes.includes('COD') || row.original.paymentMethod === 'Cash on Delivery (COD)';
+        return isCod ? (
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            COD
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            ONLINE PAID
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'status',

@@ -85,9 +85,20 @@ export const orders = sqliteTable('orders', {
 export const orderItems = sqliteTable('order_items', {
   id: text('id').primaryKey(),
   orderId: text('order_id').notNull().references(() => orders.id, { onDelete: 'cascade' }),
-  variantId: text('variant_id').notNull().references(() => productVariants.id),
+  productId: text('product_id'),
+  variantId: text('variant_id'),
+  productName: text('product_name'),
+  size: text('size'),
+  color: text('color'),
   quantity: integer('quantity').notNull(),
-  priceAtPurchase: integer('price_at_purchase').notNull(),
+  priceInr: integer('price_inr'),
+  imageUrl: text('image_url'),
+  customArtworkUrl: text('custom_artwork_url'),
+  customPlacement: text('custom_placement'),
+  customScale: text('custom_scale'),
+  customQuoteText: text('custom_quote_text'),
+  edition: text('edition'),
+  priceAtPurchase: integer('price_at_purchase'),
 });
 
 // --- DISCOUNT CODES ---

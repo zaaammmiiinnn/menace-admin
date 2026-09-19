@@ -14,10 +14,15 @@ import {
   MapPin,
   User,
   ExternalLink,
+  Trash2,
+  Sparkles,
+  Banknote,
+  CreditCard,
+  ShieldCheck,
 } from 'lucide-react';
 import { updateOrderStatusAction, deleteOrderAction } from '@/lib/admin/actions';
+import { CustomPrintWorkshopCard } from '@/components/orders/CustomPrintWorkshopCard';
 import { toast } from 'sonner';
-import { Trash2 } from 'lucide-react';
 
 interface OrderDetailClientProps {
   order: any;
@@ -36,7 +41,13 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
     try {
       await updateOrderStatusAction(order.id, newStatus, trackingInput || undefined);
       setOrder((prev: any) => ({ ...prev, status: newStatus, tracking_number: trackingInput }));
-      toast.success(`Order ${order.id} status updated to ${newStatus.toUpperCase()}`);
+      if (newStatus === 'paid') {
+        toast.success(`Order ${order.id} marked as PACKED. Email dispatched to customer.`);
+      } else if (newStatus === 'shipped') {
+        toast.success(`Order ${order.id} marked as SHIPPED. Tracking email dispatched to customer.`);
+      } else {
+        toast.success(`Order ${order.id} status updated to ${newStatus.toUpperCase()}`);
+      }
       router.refresh();
     } catch (err: any) {
       toast.error(err.message || 'Failed to update order');
@@ -182,27 +193,42 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
               FULFILLMENT MANIFEST ({order.items?.length || 0} ITEMS)
             </div>
             <div className="divide-y divide-[#1D1D1D]">
-              {order.items?.map((item: any) => (
-                <div key={item.id} className="p-4 flex items-center justify-between gap-3">
-                  <div className="space-y-1">
-                    <div className="text-xs font-bold text-[#F5F1E8]">
-                      {item.product?.name || 'Menance Garment'}
-                    </div>
-                    <div className="text-[11px] font-mono text-[#8A8A8A]">
-                      Size: {item.variant?.size || 'Standard'} • Color: {item.variant?.color || 'Black'} • SKU: {item.variant?.sku || 'MNC-TEE'}
-                    </div>
-                  </div>
+              {order.items?.map((item: any) => {
+                const isCustom = item.edition === 'custom' || !!item.customArtworkUrl || !!item.custom_artwork_url || item.productName?.includes('Custom') || item.product_name?.includes('Custom') || item.name?.includes('Custom') || order.notes?.includes('CUSTOM PRINT');
+                return (
+                  <div key={item.id} className="p-4 space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="text-xs font-bold text-[#F5F1E8] flex items-center gap-2">
+                          <span>{item.productName || item.product?.name || item.product_name || 'Menance Garment'}</span>
+                          {isCustom && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#C6FF00]/15 text-[#C6FF00] border border-[#C6FF00]/30 font-semibold tracking-wider">
+                              <Sparkles className="w-2.5 h-2.5" /> CUSTOM PRINT
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] font-mono text-[#8A8A8A]">
+                          Size: {item.size || item.variant?.size || 'Standard'} • Color: {item.color || item.variant?.color || 'Black'} • SKU: {item.variant?.sku || `MNC-${item.size || 'M'}`}
+                        </div>
+                      </div>
 
-                  <div className="text-right font-mono">
-                    <div className="text-xs font-bold tabular-nums text-[#F5F1E8]">
-                      {item.quantity} × ₹{item.priceAtPurchase?.toLocaleString() || '1,499'}
+                      <div className="text-right font-mono">
+                        <div className="text-xs font-bold tabular-nums text-[#F5F1E8]">
+                          {item.quantity || 1} × ₹{(item.price_at_purchase || item.priceAtPurchase || item.priceInr || 1499).toLocaleString()}
+                        </div>
+                        <div className="text-[11px] text-[#C6FF00] tabular-nums">
+                          ₹{((item.quantity || 1) * (item.price_at_purchase || item.priceAtPurchase || item.priceInr || 1499)).toLocaleString()}
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-[11px] text-[#C6FF00] tabular-nums">
-                      ₹{((item.quantity || 1) * (item.priceAtPurchase || 1499)).toLocaleString()}
-                    </div>
+
+                    {/* Custom Print Workshop Station Card */}
+                    {isCustom && (
+                      <CustomPrintWorkshopCard order={order} item={item} />
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="p-4 bg-[#141414] border-t border-[#202020] flex items-center justify-between">
@@ -320,6 +346,55 @@ export function OrderDetailClient({ order: initialOrder }: OrderDetailClientProp
               )}
             </div>
           </div>
+
+          {/* Payment & Settlement Card */}
+          {(() => {
+            const notes = (order.notes || '').toUpperCase();
+            const isCod = notes.includes('CASH ON DELIVERY') || notes.includes('COD') || order.paymentMethod === 'Cash on Delivery (COD)';
+            return (
+              <div className="rounded-xl border border-[#222222] bg-[#121212] p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-[#1C1C1C] pb-2">
+                  <span className="text-xs font-mono uppercase tracking-widest text-[#8A8A8A] flex items-center gap-1.5">
+                    {isCod ? <Banknote className="w-4 h-4 text-amber-400" /> : <CreditCard className="w-4 h-4 text-[#C6FF00]" />}
+                    PAYMENT MODE
+                  </span>
+                  <span
+                    className={`text-[10px] font-mono font-bold uppercase px-2 py-0.5 rounded ${
+                      isCod
+                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                        : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                    }`}
+                  >
+                    {isCod ? 'COD' : 'ONLINE PAID'}
+                  </span>
+                </div>
+
+                <div className="space-y-2 text-xs font-mono">
+                  {isCod ? (
+                    <div className="p-3 bg-amber-950/20 border border-amber-500/30 rounded-lg space-y-1">
+                      <div className="text-amber-300 font-bold flex items-center gap-1.5">
+                        <Banknote className="w-3.5 h-3.5" />
+                        <span>COLLECT CASH AT DOORSTEP</span>
+                      </div>
+                      <div className="text-[#D4D4D4] text-[11px]">
+                        Collect <span className="text-[#F5F1E8] font-bold">₹{order.total_inr.toLocaleString()}</span> in physical cash from recipient.
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-emerald-950/20 border border-emerald-500/30 rounded-lg space-y-1">
+                      <div className="text-emerald-400 font-bold flex items-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" />
+                        <span>PRE-SETTLED ONLINE</span>
+                      </div>
+                      <div className="text-[#D4D4D4] text-[11px]">
+                        Captured and verified via secure gateway. Zero cash collection required.
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

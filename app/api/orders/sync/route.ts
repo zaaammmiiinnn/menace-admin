@@ -68,12 +68,20 @@ export async function POST(req: NextRequest) {
         orderItems.push({
           id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
           order_id: order.id,
+          product_id: item.productId || null,
           variant_id: item.variantId || item.id || null,
-          product_name: item.name || item.productName,
-          size: item.size,
-          color: item.color,
+          product_name: item.name || item.productName || item.product_name || 'Menance Silhouette',
+          size: item.size || 'M',
+          color: item.color || 'Black',
           quantity: item.quantity || 1,
-          price_at_purchase: item.price || item.priceInr || 0,
+          price_inr: item.price || item.priceInr || item.price_at_purchase || 0,
+          price_at_purchase: item.price || item.priceInr || item.price_at_purchase || 0,
+          image_url: item.imageUrl || item.image_url || null,
+          custom_artwork_url: item.customArtworkUrl || item.custom_artwork_url || null,
+          custom_placement: item.customPlacement || item.custom_placement || null,
+          custom_scale: item.customScale || item.custom_scale || null,
+          custom_quote_text: item.customQuoteText || item.custom_quote_text || null,
+          edition: item.edition || (item.customArtworkUrl || item.custom_artwork_url ? 'custom' : 'archive'),
         });
 
         // Decrement stock in variants table if matching SKU or variant ID

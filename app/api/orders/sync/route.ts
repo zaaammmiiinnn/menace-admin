@@ -64,6 +64,14 @@ export async function POST(req: NextRequest) {
 
     // 3. Insert Order Items & Decrement Stock
     if (Array.isArray(items)) {
+      // Clear previous items for this order ID to ensure strict idempotency
+      const existingItemsForOrder = orderItems.filter((oi: any) => oi.order_id === order.id);
+      if (existingItemsForOrder.length > 0) {
+        const otherItems = orderItems.filter((oi: any) => oi.order_id !== order.id);
+        orderItems.length = 0;
+        orderItems.push(...otherItems);
+      }
+
       for (const item of items) {
         orderItems.push({
           id: `item_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,

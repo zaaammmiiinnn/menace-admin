@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { createProductAction, updateProductAction } from '@/lib/admin/actions';
 import { toast } from 'sonner';
+import { ImageUploader } from './ImageUploader';
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
 
@@ -422,32 +423,28 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
             </div>
           </div>
 
-          {/* R2 Imagery & Camera Capture */}
+          {/* Product Imagery */}
           <div className="rounded-xl border border-[#222222] bg-[#121212] p-4 sm:p-5 space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono uppercase tracking-widest text-[#8A8A8A]">
-                PRODUCT IMAGES (R2)
+                PRODUCT IMAGERY & MEDIA
               </span>
-              <button
-                type="button"
-                onClick={handleCameraUpload}
-                disabled={isUploadingPhoto}
-                className="text-xs font-mono text-[#C6FF00] hover:underline flex items-center gap-1"
-              >
-                <Camera className="w-3 h-3" />
-                {isUploadingPhoto ? 'Uploading...' : 'Shoot Sample'}
-              </button>
+              <span className="text-[10px] font-mono text-[#C6FF00] bg-[#C6FF00]/10 px-2 py-0.5 rounded">
+                {(form.watch('images') || []).length} IMAGES
+              </span>
             </div>
 
-            <p className="text-[11px] text-[#8A8A8A]">
-              Capture physical samples directly from phone camera and upload to Cloudflare R2 bucket.
-            </p>
-
-            <div className="p-3 bg-[#181818] rounded-lg border border-dashed border-[#282828] text-center space-y-2">
-              <div className="text-xs text-[#8A8A8A]">
-                {form.watch('images')?.length || 0} imagery assets configured
-              </div>
-            </div>
+            <ImageUploader
+              images={form.watch('images') || []}
+              onChange={(updatedImages) => {
+                form.setValue('images', updatedImages, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                  shouldTouch: true,
+                });
+              }}
+              maxImages={8}
+            />
           </div>
         </div>
       </div>

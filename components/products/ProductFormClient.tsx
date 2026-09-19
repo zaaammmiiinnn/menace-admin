@@ -82,10 +82,10 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
       name: initialProduct?.name || '',
       slug: initialProduct?.slug || '',
       description: initialProduct?.description || '',
-      priceInr: initialProduct?.price_inr || 1499,
-      priceUsd: initialProduct?.price_usd || 45,
+      priceInr: initialProduct?.price_inr ?? initialProduct?.priceInr ?? 1499,
+      priceUsd: initialProduct?.price_usd ?? initialProduct?.priceUsd ?? 45,
       category: initialProduct?.category || 'tees',
-      dropId: initialProduct?.drop_id || 'drop_001',
+      dropId: initialProduct?.drop_id || initialProduct?.dropId || 'drop_001',
       status: initialProduct?.status || 'active',
       backQuote: initialProduct?.back_quote || initialProduct?.backQuote || '',
       frontLogo: initialProduct?.front_logo || initialProduct?.frontLogo || 'MENANCE®',
@@ -94,7 +94,9 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
       fit: initialProduct?.fit || 'Boxy Oversized',
       sleeveType: initialProduct?.sleeve_type || initialProduct?.sleeveType || 'Half Sleeve',
       variants: defaultVariants,
-      images: initialProduct?.images?.map((img: any) => img.url) || [],
+      images: Array.isArray(initialProduct?.images)
+        ? initialProduct.images.map((img: any) => (typeof img === 'string' ? img : img?.url)).filter(Boolean)
+        : [],
     },
   });
 
@@ -107,16 +109,28 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
     setIsSaving(true);
     try {
       if (isNew) {
-        const res = await createProductAction(values);
+        const res: any = await createProductAction(values);
+        if (res && res.error) {
+          toast.error(res.error);
+          return;
+        }
         toast.success('Product created successfully');
-        router.push(`/products/${res.id}`);
+        if (res?.id) {
+          router.push(`/products/${res.id}`);
+        } else {
+          router.push('/products');
+        }
       } else {
-        await updateProductAction(initialProduct.id, values);
+        const res: any = await updateProductAction(initialProduct.id, values);
+        if (res && res.error) {
+          toast.error(res.error);
+          return;
+        }
         toast.success('Product updated successfully');
         router.refresh();
       }
     } catch (err: any) {
-      toast.error(err.message || 'Failed to save product');
+      toast.error(err?.message || 'Failed to save product');
     } finally {
       setIsSaving(false);
     }

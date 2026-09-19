@@ -342,85 +342,90 @@ async function syncProductToStorefront(action: 'upsert' | 'delete', product: any
 }
 
 export async function createProductAction(formData: any) {
-  await requireAdmin();
-  const parsed = productFormSchema.parse(formData);
-
-  const id = `prod_${Date.now()}`;
-  const now = Date.now();
-
   try {
-    const db = getDb();
+    await requireAdmin();
+    const parsed = productFormSchema.parse(formData);
 
-    // Insert product
-    await db.insert(products).values({
-      id,
-      slug: parsed.slug,
-      name: parsed.name,
-      description: parsed.description,
-      priceInr: parsed.priceInr,
-      priceUsd: parsed.priceUsd,
-      category: parsed.category,
-      dropId: parsed.dropId || 'drop_001',
-      status: parsed.status,
-      backQuote: parsed.backQuote || null,
-      frontLogo: parsed.frontLogo || 'MENANCE®',
-      fabricGsm: parsed.fabricGsm ? Number(parsed.fabricGsm) : 240,
-      fabricType: parsed.fabricType || null,
-      fit: parsed.fit || 'Boxy Oversized',
-      sleeveType: parsed.sleeveType || null,
-      createdAt: now,
-      updatedAt: now,
-    });
+    const id = `prod_${Date.now()}`;
+    const now = Date.now();
 
-    // Insert variants
-    for (let i = 0; i < parsed.variants.length; i++) {
-      const v = parsed.variants[i];
-      await db.insert(productVariants).values({
-        id: `var_${id}_${i}`,
-        productId: id,
-        size: v.size,
-        color: v.color,
-        sku: v.sku,
-        stock: v.stock,
-        priceOverride: v.priceOverride || null,
-        imageUrl: null,
+    try {
+      const db = getDb();
+
+      // Insert product
+      await db.insert(products).values({
+        id,
+        slug: parsed.slug,
+        name: parsed.name,
+        description: parsed.description,
+        priceInr: parsed.priceInr,
+        priceUsd: parsed.priceUsd,
+        category: parsed.category,
+        dropId: parsed.dropId || 'drop_001',
+        status: parsed.status,
+        backQuote: parsed.backQuote || null,
+        frontLogo: parsed.frontLogo || 'MENANCE®',
+        fabricGsm: parsed.fabricGsm ? Number(parsed.fabricGsm) : 240,
+        fabricType: parsed.fabricType || null,
+        fit: parsed.fit || 'Boxy Oversized',
+        sleeveType: parsed.sleeveType || null,
+        createdAt: now,
+        updatedAt: now,
       });
-    }
 
-    // Insert images
-    for (let i = 0; i < parsed.images.length; i++) {
-      await db.insert(productImages).values({
-        id: `img_${id}_${i}`,
-        productId: id,
-        url: parsed.images[i],
-        alt: `${parsed.name} Image ${i + 1}`,
-        sortOrder: i,
+      // Insert variants
+      for (let i = 0; i < parsed.variants.length; i++) {
+        const v = parsed.variants[i];
+        await db.insert(productVariants).values({
+          id: `var_${id}_${i}`,
+          productId: id,
+          size: v.size,
+          color: v.color,
+          sku: v.sku,
+          stock: v.stock,
+          priceOverride: v.priceOverride || null,
+          imageUrl: null,
+        });
+      }
+
+      // Insert images
+      for (let i = 0; i < parsed.images.length; i++) {
+        await db.insert(productImages).values({
+          id: `img_${id}_${i}`,
+          productId: id,
+          url: parsed.images[i],
+          alt: `${parsed.name} Image ${i + 1}`,
+          sortOrder: i,
+        });
+      }
+
+      await logAuditAction({
+        action: 'CREATE_PRODUCT',
+        entity: 'products',
+        entityId: id,
+        details: `Created product "${parsed.name}" (${parsed.slug}) with ${parsed.variants.length} variants`,
       });
+
+      // Sync to Storefront
+      await syncProductToStorefront('upsert', {
+        id, slug: parsed.slug, name: parsed.name, description: parsed.description,
+        price_inr: parsed.priceInr, price_usd: parsed.priceUsd, category: parsed.category,
+        drop_id: parsed.dropId || 'drop_001', status: parsed.status,
+        created_at: now, updated_at: now, images: parsed.images,
+      });
+
+      invalidateAdminCache();
+      revalidatePath('/products');
+      revalidatePath('/inventory');
+      revalidatePath('/dashboard');
+      return { success: true, id };
+    } catch (err) {
+      console.error('[createProduct] D1 failed, falling back:', err);
+      return createProductFallback(id, now, parsed);
     }
-
-    await logAuditAction({
-      action: 'CREATE_PRODUCT',
-      entity: 'products',
-      entityId: id,
-      details: `Created product "${parsed.name}" (${parsed.slug}) with ${parsed.variants.length} variants`,
-    });
-
-    // Sync to Storefront
-    await syncProductToStorefront('upsert', {
-      id, slug: parsed.slug, name: parsed.name, description: parsed.description,
-      price_inr: parsed.priceInr, price_usd: parsed.priceUsd, category: parsed.category,
-      drop_id: parsed.dropId || 'drop_001', status: parsed.status,
-      created_at: now, updated_at: now, images: parsed.images,
-    });
-
-    invalidateAdminCache();
-    revalidatePath('/products');
-    revalidatePath('/inventory');
-    revalidatePath('/dashboard');
-    return { success: true, id };
-  } catch (err) {
-    console.error('[createProduct] D1 failed, falling back:', err);
-    return createProductFallback(id, now, parsed);
+  } catch (outerErr: any) {
+    console.error('[createProductAction] Action error:', outerErr);
+    return { success: false, error: outerErr?.message || 'Failed to create product' };
   }
 }
 
@@ -452,76 +457,111 @@ function createProductFallback(id: string, now: number, parsed: any) {
 }
 
 export async function updateProductAction(id: string, formData: any) {
-  await requireAdmin();
-  const parsed = productFormSchema.parse(formData);
-
   try {
-    const db = getDb();
+    await requireAdmin();
+    const parsed = productFormSchema.parse(formData);
 
-    // Verify product exists
-    const existing = await db.select().from(products).where(eq(products.id, id));
-    if (!existing.length) {
-      throw new Error('Product not found');
-    }
+    try {
+      const db = getDb();
 
-    // Update product
-    await db.update(products).set({
-      slug: parsed.slug,
-      name: parsed.name,
-      description: parsed.description,
-      priceInr: parsed.priceInr,
-      priceUsd: parsed.priceUsd,
-      category: parsed.category,
-      dropId: parsed.dropId || 'drop_001',
-      status: parsed.status,
-      backQuote: parsed.backQuote || null,
-      frontLogo: parsed.frontLogo || 'MENANCE®',
-      fabricGsm: parsed.fabricGsm ? Number(parsed.fabricGsm) : 240,
-      fabricType: parsed.fabricType || null,
-      fit: parsed.fit || 'Boxy Oversized',
-      sleeveType: parsed.sleeveType || null,
-      updatedAt: Date.now(),
-    }).where(eq(products.id, id));
+      // Check if product exists in D1
+      const existing = await db.select().from(products).where(eq(products.id, id));
+      if (!existing.length) {
+        // Upsert product if it wasn't in D1 yet
+        await db.insert(products).values({
+          id,
+          slug: parsed.slug,
+          name: parsed.name,
+          description: parsed.description,
+          priceInr: parsed.priceInr,
+          priceUsd: parsed.priceUsd,
+          category: parsed.category,
+          dropId: parsed.dropId || 'drop_001',
+          status: parsed.status,
+          backQuote: parsed.backQuote || null,
+          frontLogo: parsed.frontLogo || 'MENANCE®',
+          fabricGsm: parsed.fabricGsm ? Number(parsed.fabricGsm) : 240,
+          fabricType: parsed.fabricType || null,
+          fit: parsed.fit || 'Boxy Oversized',
+          sleeveType: parsed.sleeveType || null,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        });
+      } else {
+        // Update product
+        await db.update(products).set({
+          slug: parsed.slug,
+          name: parsed.name,
+          description: parsed.description,
+          priceInr: parsed.priceInr,
+          priceUsd: parsed.priceUsd,
+          category: parsed.category,
+          dropId: parsed.dropId || 'drop_001',
+          status: parsed.status,
+          backQuote: parsed.backQuote || null,
+          frontLogo: parsed.frontLogo || 'MENANCE®',
+          fabricGsm: parsed.fabricGsm ? Number(parsed.fabricGsm) : 240,
+          fabricType: parsed.fabricType || null,
+          fit: parsed.fit || 'Boxy Oversized',
+          sleeveType: parsed.sleeveType || null,
+          updatedAt: Date.now(),
+        }).where(eq(products.id, id));
+      }
 
-    // Delete old variants and re-insert
-    await db.delete(productVariants).where(eq(productVariants.productId, id));
-    for (let i = 0; i < parsed.variants.length; i++) {
-      const v = parsed.variants[i];
-      await db.insert(productVariants).values({
-        id: `var_${id}_${i}`,
-        productId: id,
-        size: v.size,
-        color: v.color,
-        sku: v.sku,
-        stock: v.stock,
-        priceOverride: v.priceOverride || null,
-        imageUrl: null,
+      // Delete old variants and re-insert
+      await db.delete(productVariants).where(eq(productVariants.productId, id));
+      for (let i = 0; i < parsed.variants.length; i++) {
+        const v = parsed.variants[i];
+        await db.insert(productVariants).values({
+          id: `var_${id}_${i}`,
+          productId: id,
+          size: v.size,
+          color: v.color,
+          sku: v.sku,
+          stock: v.stock,
+          priceOverride: v.priceOverride || null,
+          imageUrl: null,
+        });
+      }
+
+      // Delete old images and re-insert
+      await db.delete(productImages).where(eq(productImages.productId, id));
+      for (let i = 0; i < parsed.images.length; i++) {
+        await db.insert(productImages).values({
+          id: `img_${id}_${i}`,
+          productId: id,
+          url: parsed.images[i],
+          alt: `${parsed.name} Image ${i + 1}`,
+          sortOrder: i,
+        });
+      }
+
+      await logAuditAction({
+        action: 'UPDATE_PRODUCT',
+        entity: 'products',
+        entityId: id,
+        details: `Updated catalog specs for "${parsed.name}"`,
       });
+
+      // Sync to Storefront
+      await syncProductToStorefront('upsert', {
+        id, slug: parsed.slug, name: parsed.name, description: parsed.description,
+        price_inr: parsed.priceInr, price_usd: parsed.priceUsd,
+        images: parsed.images,
+      });
+
+      invalidateAdminCache();
+      revalidatePath('/products');
+      revalidatePath(`/products/${id}`);
+      revalidatePath('/inventory');
+      return { success: true };
+    } catch (err: any) {
+      console.error('[updateProduct] D1 failed, falling back:', err);
+      return updateProductFallback(id, parsed);
     }
-
-    await logAuditAction({
-      action: 'UPDATE_PRODUCT',
-      entity: 'products',
-      entityId: id,
-      details: `Updated catalog specs for "${parsed.name}"`,
-    });
-
-    // Sync to Storefront
-    await syncProductToStorefront('upsert', {
-      id, slug: parsed.slug, name: parsed.name, description: parsed.description,
-      price_inr: parsed.priceInr, price_usd: parsed.priceUsd,
-      images: parsed.images,
-    });
-
-    invalidateAdminCache();
-    revalidatePath('/products');
-    revalidatePath(`/products/${id}`);
-    revalidatePath('/inventory');
-    return { success: true };
-  } catch (err: any) {
-    if (err.message === 'Product not found') throw err;
-    console.error('[updateProduct] D1 failed, falling back:', err);
-    return updateProductFallback(id, parsed);
+  } catch (outerErr: any) {
+    console.error('[updateProductAction] Action error:', outerErr);
+    return { success: false, error: outerErr?.message || 'Failed to update product' };
   }
 }
 
@@ -529,13 +569,34 @@ function updateProductFallback(id: string, parsed: any) {
   const store = getLocalStore();
   const productsData = store.getTable('products');
   const index = productsData.findIndex((p: any) => p.id === id);
-  if (index === -1) throw new Error('Product not found');
-
-  productsData[index] = {
-    ...productsData[index], slug: parsed.slug, name: parsed.name, description: parsed.description,
-    price_inr: parsed.priceInr, price_usd: parsed.priceUsd, category: parsed.category,
-    drop_id: parsed.dropId || 'drop_001', status: parsed.status, updated_at: Date.now(),
-  };
+  if (index === -1) {
+    productsData.unshift({
+      id,
+      slug: parsed.slug,
+      name: parsed.name,
+      description: parsed.description,
+      price_inr: parsed.priceInr,
+      price_usd: parsed.priceUsd,
+      category: parsed.category,
+      drop_id: parsed.dropId || 'drop_001',
+      status: parsed.status,
+      created_at: Date.now(),
+      updated_at: Date.now(),
+    });
+  } else {
+    productsData[index] = {
+      ...productsData[index],
+      slug: parsed.slug,
+      name: parsed.name,
+      description: parsed.description,
+      price_inr: parsed.priceInr,
+      price_usd: parsed.priceUsd,
+      category: parsed.category,
+      drop_id: parsed.dropId || 'drop_001',
+      status: parsed.status,
+      updated_at: Date.now(),
+    };
+  }
 
   const variantsTable = store.getTable('product_variants');
   const otherVariants = variantsTable.filter((v: any) => v.product_id !== id);
@@ -544,6 +605,13 @@ function updateProductFallback(id: string, parsed: any) {
     sku: v.sku, stock: v.stock, price_override: v.priceOverride || null, image_url: null,
   }));
   store.tables.product_variants = [...otherVariants, ...updatedVariants];
+
+  const imagesTable = store.getTable('product_images');
+  const otherImages = imagesTable.filter((img: any) => img.product_id !== id);
+  const updatedImages = (parsed.images || []).map((url: string, idx: number) => ({
+    id: `img_${id}_${idx}`, product_id: id, url, alt: `${parsed.name} Image ${idx + 1}`, sort_order: idx,
+  }));
+  store.tables.product_images = [...otherImages, ...updatedImages];
 
   invalidateAdminCache();
   revalidatePath('/products');

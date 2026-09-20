@@ -18,6 +18,7 @@ export const products = sqliteTable('products', {
   fabricType: text('fabric_type'),
   fit: text('fit').default('Boxy Oversized'),
   sleeveType: text('sleeve_type'),
+  purchaseMode: text('purchase_mode').default('buy_now'),
   createdAt: integer('created_at').notNull(),
   updatedAt: integer('updated_at').notNull(),
 });

@@ -393,6 +393,9 @@ export async function createProductAction(formData: any) {
     const processedImages = await persistImagesToKV(parsed.images || [], id);
     parsed.images = processedImages;
 
+    // Pre-populate local fallback store so it is instantly available across any fallback path
+    createProductFallback(id, now, parsed);
+
     try {
       const db = getDb();
 
@@ -460,12 +463,13 @@ export async function createProductAction(formData: any) {
 
       invalidateAdminCache();
       revalidatePath('/products');
+      revalidatePath(`/products/${id}`);
       revalidatePath('/inventory');
       revalidatePath('/dashboard');
       return { success: true, id };
     } catch (err) {
       console.error('[createProduct] D1 failed, falling back:', err);
-      return createProductFallback(id, now, parsed);
+      return { success: true, id };
     }
   } catch (outerErr: any) {
     console.error('[createProductAction] Action error:', outerErr);

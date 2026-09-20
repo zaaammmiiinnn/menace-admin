@@ -515,15 +515,20 @@ function getProductsFallback() {
   });
 }
 
-export async function getProductById(productId: string) {
+export async function getProductById(productIdOrSlug: string) {
   try {
     const db = getDb();
-    const productRows = await db.select().from(products).where(eq(products.id, productId));
-    if (!productRows.length) return null;
+    let productRows = await db.select().from(products).where(eq(products.id, productIdOrSlug));
+    if (!productRows.length) {
+      productRows = await db.select().from(products).where(eq(products.slug, productIdOrSlug));
+    }
+    if (!productRows.length) {
+      return getProductByIdFallback(productIdOrSlug);
+    }
     const product = productRows[0];
 
-    const pVariants = await db.select().from(productVariants).where(eq(productVariants.productId, productId));
-    const pImages = await db.select().from(productImages).where(eq(productImages.productId, productId));
+    const pVariants = await db.select().from(productVariants).where(eq(productVariants.productId, product.id));
+    const pImages = await db.select().from(productImages).where(eq(productImages.productId, product.id));
     const allDrops = await db.select().from(drops);
     const drop = allDrops.find((d) => d.id === product.dropId);
 
@@ -538,6 +543,12 @@ export async function getProductById(productId: string) {
       category: product.category,
       drop_id: product.dropId,
       status: product.status,
+      back_quote: product.backQuote,
+      front_logo: product.frontLogo,
+      fabric_gsm: product.fabricGsm,
+      fabric_type: product.fabricType,
+      fit: product.fit,
+      sleeve_type: product.sleeveType,
       created_at: product.createdAt,
       updated_at: product.updatedAt,
       variants: pVariants.map((v) => ({
@@ -555,20 +566,20 @@ export async function getProductById(productId: string) {
     };
   } catch (err) {
     console.error('[getProductById] D1 query failed, falling back:', err);
-    return getProductByIdFallback(productId);
+    return getProductByIdFallback(productIdOrSlug);
   }
 }
 
-function getProductByIdFallback(productId: string) {
+function getProductByIdFallback(productIdOrSlug: string) {
   const store = getLocalStore();
   const productsData = store.getTable('products');
-  const product = productsData.find((p: any) => p.id === productId);
+  const product = productsData.find((p: any) => p.id === productIdOrSlug || p.slug === productIdOrSlug);
   if (!product) return null;
 
-  const variants = store.getTable('product_variants').filter((v: any) => v.product_id === productId);
-  const images = store.getTable('product_images').filter((img: any) => img.product_id === productId);
+  const variants = store.getTable('product_variants').filter((v: any) => v.product_id === product.id || v.productId === product.id);
+  const images = store.getTable('product_images').filter((img: any) => img.product_id === product.id || img.productId === product.id);
   const dropsData = store.getTable('drops');
-  const drop = dropsData.find((d: any) => d.id === product.drop_id);
+  const drop = dropsData.find((d: any) => d.id === (product.drop_id || product.dropId));
   return { ...product, variants, images, drop };
 }
 

@@ -3,6 +3,8 @@ import { getProducts } from '@/lib/admin/queries';
 import { ProductsListClient } from '@/components/products/ProductsListClient';
 import { Shirt } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Products Catalog',
   description: 'Manage apparel drops, silhouettes, variants, and pricing',

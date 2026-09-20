@@ -9,9 +9,11 @@ export function getD1Database(): any {
     const ctx = getCloudflareContext();
     if (ctx?.env?.DB) return ctx.env.DB;
   } catch {}
-  // 2. Fallback: check globalThis patterns
+  // 2. Global Cloudflare context symbol
   if (typeof globalThis !== 'undefined') {
     const g = globalThis as any;
+    const ctxSymbol = Symbol.for('__cloudflare-context__');
+    if (g[ctxSymbol]?.env?.DB) return g[ctxSymbol].env.DB;
     if (g.__env__?.DB) return g.__env__.DB;
     if (g.DB) return g.DB;
     if (g.env?.DB) return g.env.DB;
@@ -34,6 +36,9 @@ export function getKVDatabase(): any {
   } catch {}
   if (typeof globalThis !== 'undefined') {
     const g = globalThis as any;
+    const ctxSymbol = Symbol.for('__cloudflare-context__');
+    if (g[ctxSymbol]?.env?.MENACE_KV) return g[ctxSymbol].env.MENACE_KV;
+    if (g[ctxSymbol]?.env?.MENANCE_KV) return g[ctxSymbol].env.MENANCE_KV;
     if (g.__env__?.MENACE_KV) return g.__env__.MENACE_KV;
     if (g.__env__?.MENANCE_KV) return g.__env__.MENANCE_KV;
     if (g.MENACE_KV) return g.MENACE_KV;
@@ -327,21 +332,13 @@ export function getLocalStore(): LocalD1Fallback {
   return globalLocalD1;
 }
 
-// Lazy-initialized database instance
-let _lazyDbInstance: ReturnType<typeof drizzleD1> | null = null;
-
 export function getDb() {
-  if (_lazyDbInstance) {
-    return _lazyDbInstance;
-  }
   const d1 = getD1Database();
   if (d1) {
-    _lazyDbInstance = drizzleD1(d1, { schema });
-    return _lazyDbInstance;
+    return drizzleD1(d1, { schema });
   }
   const fallback = getLocalStore();
-  _lazyDbInstance = drizzleD1(fallback as any, { schema });
-  return _lazyDbInstance;
+  return drizzleD1(fallback as any, { schema });
 }
 
 export * from './schema';

@@ -5,6 +5,8 @@ import { MobileTabBar } from '@/components/shell/MobileTabBar';
 import { CommandPalette } from '@/components/shell/CommandPalette';
 import { AdminHeaderBar } from '@/components/shell/AdminHeaderBar';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminLayout({
   children,
 }: {

@@ -61,19 +61,24 @@ export function ProductFormClient({ initialProduct, isNew = false }: ProductForm
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
+  const initialCode = (initialProduct?.slug || initialProduct?.name || `item-${Date.now()}`)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, 4) || 'MNC';
+
   const defaultVariants = initialProduct?.variants?.length
-    ? initialProduct.variants.map((v: any) => ({
+    ? initialProduct.variants.map((v: any, idx: number) => ({
         size: v.size,
-        color: v.color,
-        sku: v.sku,
-        stock: v.stock,
-        priceOverride: v.price_override || null,
+        color: v.color || 'Black',
+        sku: v.sku || `MNC-${initialCode}-BLK-${v.size || idx}`,
+        stock: v.stock ?? 25,
+        priceOverride: v.price_override || v.priceOverride || null,
       }))
     : [
-        { size: 'S', color: 'Black', sku: 'MNC-NEW-S', stock: 25, priceOverride: null },
-        { size: 'M', color: 'Black', sku: 'MNC-NEW-M', stock: 50, priceOverride: null },
-        { size: 'L', color: 'Black', sku: 'MNC-NEW-L', stock: 40, priceOverride: null },
-        { size: 'XL', color: 'Black', sku: 'MNC-NEW-XL', stock: 20, priceOverride: null },
+        { size: 'S', color: 'Black', sku: `MNC-${initialCode}-BLK-S`, stock: 25, priceOverride: null },
+        { size: 'M', color: 'Black', sku: `MNC-${initialCode}-BLK-M`, stock: 50, priceOverride: null },
+        { size: 'L', color: 'Black', sku: `MNC-${initialCode}-BLK-L`, stock: 40, priceOverride: null },
+        { size: 'XL', color: 'Black', sku: `MNC-${initialCode}-BLK-XL`, stock: 20, priceOverride: null },
       ];
 
   const form = useForm<ProductFormValues>({

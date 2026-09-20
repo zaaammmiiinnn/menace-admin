@@ -393,6 +393,26 @@ export async function createProductAction(formData: any) {
     const processedImages = await persistImagesToKV(parsed.images || [], id);
     parsed.images = processedImages;
 
+    // Sanitize variant SKUs to guarantee uniqueness across D1
+    const baseSku = (parsed.slug || parsed.name)
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 6) || 'PROD';
+    const seenSkus = new Set<string>();
+    parsed.variants = (parsed.variants || []).map((v: any, index: number) => {
+      let finalSku = (v.sku || '').trim().toUpperCase();
+      if (!finalSku || finalSku.startsWith('MNC-NEW-') || seenSkus.has(finalSku)) {
+        finalSku = `MNC-${baseSku}-${(v.color || 'BLK').toUpperCase().slice(0, 3)}-${v.size || index}-${id.slice(-4)}${seenSkus.has(finalSku) ? `-${index + 1}` : ''}`;
+      }
+      seenSkus.add(finalSku);
+      return {
+        ...v,
+        sku: finalSku,
+        stock: Number(v.stock) || 0,
+        color: v.color || 'Black',
+      };
+    });
+
     // Pre-populate local fallback store so it is instantly available across any fallback path
     createProductFallback(id, now, parsed);
 
@@ -420,19 +440,35 @@ export async function createProductAction(formData: any) {
         updatedAt: now,
       });
 
-      // Insert variants
+      // Insert variants with collision-safety
       for (let i = 0; i < parsed.variants.length; i++) {
         const v = parsed.variants[i];
-        await db.insert(productVariants).values({
-          id: `var_${id}_${i}`,
-          productId: id,
-          size: v.size,
-          color: v.color,
-          sku: v.sku,
-          stock: v.stock,
-          priceOverride: v.priceOverride || null,
-          imageUrl: null,
-        });
+        let variantSku = v.sku;
+        try {
+          await db.insert(productVariants).values({
+            id: `var_${id}_${i}`,
+            productId: id,
+            size: v.size,
+            color: v.color,
+            sku: variantSku,
+            stock: v.stock,
+            priceOverride: v.priceOverride || null,
+            imageUrl: null,
+          });
+        } catch (skuErr) {
+          // If collision still occurred, append unique salt
+          variantSku = `${variantSku}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+          await db.insert(productVariants).values({
+            id: `var_${id}_${i}`,
+            productId: id,
+            size: v.size,
+            color: v.color,
+            sku: variantSku,
+            stock: v.stock,
+            priceOverride: v.priceOverride || null,
+            imageUrl: null,
+          });
+        }
       }
 
       // Insert images
@@ -459,6 +495,7 @@ export async function createProductAction(formData: any) {
         price_inr: parsed.priceInr, price_usd: parsed.priceUsd, category: parsed.category,
         drop_id: parsed.dropId || 'drop_001', status: parsed.status,
         created_at: now, updated_at: now, images: parsed.images,
+        variants: parsed.variants,
       });
 
       invalidateAdminCache();
@@ -519,6 +556,26 @@ export async function updateProductAction(id: string, formData: any) {
     const processedImages = await persistImagesToKV(parsed.images || [], id);
     parsed.images = processedImages;
 
+    // Sanitize variant SKUs to guarantee uniqueness across D1
+    const baseSku = (parsed.slug || parsed.name)
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 6) || 'PROD';
+    const seenSkus = new Set<string>();
+    parsed.variants = (parsed.variants || []).map((v: any, index: number) => {
+      let finalSku = (v.sku || '').trim().toUpperCase();
+      if (!finalSku || finalSku.startsWith('MNC-NEW-') || seenSkus.has(finalSku)) {
+        finalSku = `MNC-${baseSku}-${(v.color || 'BLK').toUpperCase().slice(0, 3)}-${v.size || index}-${id.slice(-4)}${seenSkus.has(finalSku) ? `-${index + 1}` : ''}`;
+      }
+      seenSkus.add(finalSku);
+      return {
+        ...v,
+        sku: finalSku,
+        stock: Number(v.stock) || 0,
+        color: v.color || 'Black',
+      };
+    });
+
     try {
       const db = getDb();
 
@@ -570,16 +627,31 @@ export async function updateProductAction(id: string, formData: any) {
       await db.delete(productVariants).where(eq(productVariants.productId, id));
       for (let i = 0; i < parsed.variants.length; i++) {
         const v = parsed.variants[i];
-        await db.insert(productVariants).values({
-          id: `var_${id}_${i}`,
-          productId: id,
-          size: v.size,
-          color: v.color,
-          sku: v.sku,
-          stock: v.stock,
-          priceOverride: v.priceOverride || null,
-          imageUrl: null,
-        });
+        let variantSku = v.sku;
+        try {
+          await db.insert(productVariants).values({
+            id: `var_${id}_${i}`,
+            productId: id,
+            size: v.size,
+            color: v.color,
+            sku: variantSku,
+            stock: v.stock,
+            priceOverride: v.priceOverride || null,
+            imageUrl: null,
+          });
+        } catch (skuErr) {
+          variantSku = `${variantSku}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+          await db.insert(productVariants).values({
+            id: `var_${id}_${i}`,
+            productId: id,
+            size: v.size,
+            color: v.color,
+            sku: variantSku,
+            stock: v.stock,
+            priceOverride: v.priceOverride || null,
+            imageUrl: null,
+          });
+        }
       }
 
       // Delete old images and re-insert
@@ -606,6 +678,7 @@ export async function updateProductAction(id: string, formData: any) {
         id, slug: parsed.slug, name: parsed.name, description: parsed.description,
         price_inr: parsed.priceInr, price_usd: parsed.priceUsd,
         images: parsed.images,
+        variants: parsed.variants,
       });
 
       invalidateAdminCache();
